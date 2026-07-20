@@ -28,7 +28,6 @@ from public_safety import (
     PUBLIC_PREVIEW_GUIDANCE,
     PUBLIC_PREVIEW_ONLY,
     PROJECT_ROOT,
-    mask_identifier,
     require_public_preview_dry_run,
     secure_directory,
     set_owner_only_permissions,
@@ -238,7 +237,7 @@ def cmd_configure(args: argparse.Namespace) -> int:
     _atomic_write_json(CONFIG_PATH, payload)
     print("Configuration saved outside the repository.")
     print(f"Environment : {environment}")
-    print(f"API Key ID  : {mask_identifier(api_key_id)}")
+    print("API Key ID  : stored privately")
     print(f"Key file    : {stored_key.name} (private application storage)")
     print("Next step   : python bot.py run  # dry run is the default")
     return 0
@@ -363,7 +362,7 @@ def cmd_status(_args: argparse.Namespace) -> int:
     key_path = Path(str(config.get("private_key_path") or ""))
     print(f"Configuration: {CONFIG_PATH}")
     print(f"Environment  : {environment}")
-    print(f"API Key ID   : {mask_identifier(str(config.get('api_key_id') or ''))}")
+    print("API Key ID   : stored privately")
     print(f"Private key  : {'present' if key_path.is_file() and not key_path.is_symlink() else 'missing'} ({key_path.name or 'not set'})")
     print("Default run : dry run ON; one cycle")
     print(f"Preview lock: {'ON' if PUBLIC_PREVIEW_ONLY else 'INVALID'}; order submission is unavailable")
