@@ -10,7 +10,7 @@
     },
     {
       "path": ".gitattributes",
-      "sha256": "74dfa155119aa5f3b750a2a6a38bef0aa71bc5f1bb46c97143dd144f319f8958"
+      "sha256": "6447fb8216bbed27a6751199477a94c251400ab65d543d1f5c80ce86efc52b97"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
@@ -54,7 +54,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "00f386f1a469955489c5b609025b37aab03a698f4ea9b297db7566bf6a3ca6f0"
+      "sha256": "9b4ffcc0ec9ba27e71abe9edb6eca73ebc81737e84388643b79da0560a2b5e06"
     },
     {
       "path": "CODE_OF_CONDUCT.md",
@@ -66,43 +66,27 @@
     },
     {
       "path": "FAQ.md",
-      "sha256": "9b95888e28a342f740248289880627d09257d71f299b0058869ec64f1ffe346d"
+      "sha256": "b11c1ce4b4ec77a2d7e7420a0fbc04ea0c65e8a9209798cf2649b7593131ffee"
     },
     {
       "path": "LICENSE.md",
       "sha256": "7b2cc810096ea37951d0a6c92eb8c2921328816a3c68ea23fc84bc76f72327c0"
     },
     {
-      "path": "LICENSE_OPTIONS.md",
-      "sha256": "806549da5f8c77fc9c7c0002d50fd584a6c231b63db05bf532d04b6e675b30ae"
-    },
-    {
-      "path": "LINKEDIN_POST.md",
-      "sha256": "64d2ee69d23eec520eed0348cf54589a0766ead02d2f7e7b8bbdb5a6326ddac1"
-    },
-    {
       "path": "Makefile",
       "sha256": "237748f273d9a0343219993d05a8ddce3a446c42172adaa0d2e4d1f49ecbb140"
-    },
-    {
-      "path": "PORTFOLIO_COPY.md",
-      "sha256": "6f8bbc3c62c35ce5a6256028644de9a6a23ff86b9b62c36f09e3c1f61e51e009"
     },
     {
       "path": "PRIVACY.md",
       "sha256": "c10c8ff1ef465be7d16e261a6c922e880fef22c67e9a1ccb035c7224588c5c49"
     },
     {
-      "path": "PUBLISHING_CHECKLIST.md",
-      "sha256": "520f99856c9c3494e1dfa643807c94980285d7b2cf62e1ddf6f22c19349ef2f8"
-    },
-    {
       "path": "QUICKSTART.md",
-      "sha256": "2cab6f265d6d8171bf6331cc4f5c267ee4f4ad3d64b634005588f1e029a4f70f"
+      "sha256": "edfd030d14fb447b806ec61f3d44d582075dbca01598763451d1418f85407f6d"
     },
     {
       "path": "README.md",
-      "sha256": "97e94a6ea0083a7e1af6143c330829208dc735d93fb1a239ee2b213fbdfb5e3c"
+      "sha256": "5b9a2cf0480443b0fa160eb5328e264a6e22e71ade5ad2f1db04ba01863032f3"
     },
     {
       "path": "RISK_DISCLOSURE.md",
@@ -114,15 +98,15 @@
     },
     {
       "path": "SECURITY.md",
-      "sha256": "e111a4612087d8417b5f315361fba6bb94e2834f56e45d88720514289c96feca"
+      "sha256": "de7119f80554e053a1b53d5f4b4af9dbff557a0b4b788fdf376403ff9fdd7a45"
     },
     {
       "path": "SECURITY_AUDIT.md",
-      "sha256": "ff41a12a86ac549fe39f933302cea4770949160acec29f900ac466f363072a70"
+      "sha256": "34ffc06a94684aa668371a4396a74fe798aa65f6368ec3f9c7328c4d3e271a80"
     },
     {
       "path": "SECURITY_FIRST.md",
-      "sha256": "9e9a9dee511810334a266219ad5acc72aec9f6e48633159c80b40c88b57b7a6d"
+      "sha256": "bc42638fc8a83685879051179f744e5745ab7e67a8d39d30ad1b80b16586bf98"
     },
     {
       "path": "SETUP_WINDOWS.bat",
@@ -149,20 +133,12 @@
       "sha256": "c522c4e8ca37e12fd17c9e1fc326bfd04d0b933da40e544c24002d5a2e519f43"
     },
     {
-      "path": "docs/RELEASE_STORY.md",
-      "sha256": "0825326bc9ac349cb443e116a9704a2097c5ebcbedeb5e082062ea4eae13e242"
-    },
-    {
       "path": "docs/THREAT_MODEL.md",
       "sha256": "76e676c8148d5ba9d6870b3535d8ee5f89257ece9cf0dbf1418d1a1aaf8908b4"
     },
     {
-      "path": "docs/VIBECODING_LEARNING_PATH.md",
-      "sha256": "ea22498460f9a07351b6371c6559866833513e97865f97c71e8b7571360c3c3c"
-    },
-    {
       "path": "kalshi_15m_sell_bot.py",
-      "sha256": "d7587ef80289eb8922526c53d72a12e1f821df3cb6cd489e2dc0a1ec58e681ff"
+      "sha256": "1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38"
     },
     {
       "path": "public_safety.py",
@@ -194,7 +170,7 @@
     },
     {
       "path": "scripts/build_release.py",
-      "sha256": "f4ec22c76cb80df3cf5ffce492bccc7ffd7ea65ddc796571b91d2b430c5a9298"
+      "sha256": "535c402e30b6017606f0234bc0ff9a8d1936fc11a7c2d5a1e5671cdd04241149"
     },
     {
       "path": "scripts/generate_sbom.py",
@@ -235,11 +211,11 @@
   ],
   "generated_utc": "2026-07-19T18:00:00Z",
   "license_status": "MIT",
-  "preview_engine_sha256": "d7587ef80289eb8922526c53d72a12e1f821df3cb6cd489e2dc0a1ec58e681ff",
+  "preview_engine_sha256": "1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38",
   "project": "kalshi-15m-sell-bot-public-preview",
   "public_preview_only": true,
   "publication_status": "PUBLIC_DRY_RUN_PREVIEW",
-  "release_lineage": "sanitized public-preview working tree; private workspace data excluded",
+  "release_lineage": "public dry-run preview; operational data and live-only tooling excluded",
   "rights_holder": "Gateway Information Group LLC",
   "rights_notice": "Copyright \u00a9 2026 Gateway Information Group LLC. Licensed under the MIT License.",
   "security_profile": "experimental preview; immutable dry run; all mutations blocked before signing; exact official origins",

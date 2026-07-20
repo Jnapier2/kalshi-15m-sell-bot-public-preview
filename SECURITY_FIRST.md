@@ -3,9 +3,13 @@
 Do this **before entering an API Key ID or copying a private key**. This
 MIT-licensed public preview has no order-capable mode.
 
-## 1. Confirm the archive hash
+## 1. Confirm a packaged archive hash
 
-The release page should publish the ZIP’s SHA-256 value separately. Calculate the downloaded file’s hash and compare every character.
+When a release provides both a project ZIP and a separately published SHA-256
+value, calculate the downloaded file's hash and compare every character.
+GitHub's automatically generated source archives are not sealed project
+releases and do not include a project-issued sidecar; cloned source can proceed
+to the repository inventory check in step 2.
 
 Windows PowerShell:
 
@@ -19,7 +23,7 @@ macOS or Linux:
 sha256sum kalshi-15m-sell-bot-public-v41.22.2.zip
 ```
 
-A mismatch means: stop, delete the copy, and obtain it again from the owner’s official release page.
+A mismatch means: stop, delete the copy, and obtain it again from the official repository or release channel.
 
 ## 2. Verify the extracted inventory without installing anything
 
