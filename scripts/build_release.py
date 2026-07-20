@@ -33,6 +33,11 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def write_utf8_lf(path: Path, text: str) -> None:
+    """Write deterministic UTF-8 bytes with LF line endings on every platform."""
+    path.write_bytes(text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8"))
+
+
 def source_files(root: Path):
     for path in sorted(root.rglob("*")):
         rel = path.relative_to(root)
@@ -60,22 +65,22 @@ def write_metadata(root: Path) -> dict[str, str]:
         "security_profile": "experimental preview; immutable dry run; all mutations blocked before signing; exact official origins",
         "files": [{"path": path, "sha256": digest} for path, digest in records.items()],
     }
-    (root / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     records["MANIFEST.json"] = sha256(root / "MANIFEST.json")
-    (root / "SHA256SUMS.txt").write_text(
+    write_utf8_lf(
+        root / "SHA256SUMS.txt",
         "# SHA-256 inventory for every sealed release file except this checksum file.\n"
         + "".join(f"{digest}  {path}\n" for path, digest in sorted(records.items())),
-        encoding="utf-8",
     )
     # Rebuild MANIFEST one last time so it exactly matches checksum records, excluding itself to avoid recursion.
     manifest["files"] = [{"path": path, "sha256": digest} for path, digest in sorted(records.items()) if path != "MANIFEST.json"]
-    (root / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     # Update MANIFEST hash in sums after final write.
     records["MANIFEST.json"] = sha256(root / "MANIFEST.json")
-    (root / "SHA256SUMS.txt").write_text(
+    write_utf8_lf(
+        root / "SHA256SUMS.txt",
         "# SHA-256 inventory for every sealed release file except this checksum file.\n"
         + "".join(f"{digest}  {path}\n" for path, digest in sorted(records.items())),
-        encoding="utf-8",
     )
     return records
 

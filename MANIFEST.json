@@ -110,7 +110,7 @@
     },
     {
       "path": "SBOM.cdx.json",
-      "sha256": "ec2c88c070f1d7ec6d6f5264941e689392d79139faf6073d20e765c41f06b56e"
+      "sha256": "0cc890d51482f0f129e7c5e647c7d9464406d11d5110557c3a79daaa7939c8ca"
     },
     {
       "path": "SECURITY.md",
@@ -194,11 +194,11 @@
     },
     {
       "path": "scripts/build_release.py",
-      "sha256": "db04fb09624d482853c6b7e850b3f0328290cc2079343852ae94a800584c8039"
+      "sha256": "f4ec22c76cb80df3cf5ffce492bccc7ffd7ea65ddc796571b91d2b430c5a9298"
     },
     {
       "path": "scripts/generate_sbom.py",
-      "sha256": "a9b91a1285d114bce37a1c0caafd40515d2933a11a852d11c207e567cfc8a19e"
+      "sha256": "b75b302a1aac499886ef51d2a14b82cd1f755596b4047385a52fb983f4c1b3a7"
     },
     {
       "path": "scripts/security_check.py",
