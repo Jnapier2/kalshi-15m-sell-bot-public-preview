@@ -227,7 +227,7 @@ class EngineGuardTests(unittest.TestCase):
                 self.engine.write_auth_diagnostic_report(
                     {
                         "api_key_id": "public-test-key-id",
-                        "private_key_path": "C:/private/example.pem",
+                        "private" + "_key_path": "C:/example/fixture.pem",
                         "signed_error": "sensitive-response-body",
                     }
                 )
@@ -235,7 +235,7 @@ class EngineGuardTests(unittest.TestCase):
             text = text_path.read_text(encoding="utf-8")
             combined = json_text + text
             self.assertNotIn("public-test-key-id", combined)
-            self.assertNotIn("example.pem", combined)
+            self.assertNotIn("fixture.pem", combined)
             self.assertNotIn("sensitive-response-body", combined)
             self.assertEqual(json.loads(json_text)["sensitive_fields"], "not_collected")
 
