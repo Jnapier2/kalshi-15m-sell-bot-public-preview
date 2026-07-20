@@ -174,7 +174,7 @@
     },
     {
       "path": "requirements-dev.lock.txt",
-      "sha256": "0fb11c900a30011e7c960113b1c37b983b50b465e9fe358203d91d41fc846d36"
+      "sha256": "19fed8f5efd48cc8b7a482cb191e5756387aaacd2552b7ba4429fcff049dafbd"
     },
     {
       "path": "requirements-dev.txt",
