@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a reviewable improvement that preserves safe defaults
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or learning goal
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Explain effects on demo, dry run, credentials, network destinations, and order authorization.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Verification plan
+      description: Include adversarial and regression cases.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: This proposal does not weaken demo/dry-run defaults, TLS, allowlists, credential isolation, or live acknowledgment.
+          required: true

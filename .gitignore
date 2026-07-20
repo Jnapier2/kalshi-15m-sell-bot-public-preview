@@ -1,0 +1,43 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+*.egg-info/
+
+# Credentials and local configuration
+*.key
+*.pem
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+config.json
+run_kalshi_15m_sell_bot.local.bat
+
+# Runtime state, logs, diagnostics, exports
+logs/
+state/
+data/
+exports/
+crash_reports/
+*.sqlite
+*.sqlite3
+*.db
+*.log
+kalshi_15m_*_latest.json
+kalshi_15m_*_latest.txt
+kalshi_15m_*_history.csv
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

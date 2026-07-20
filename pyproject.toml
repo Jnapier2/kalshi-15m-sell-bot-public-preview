@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kalshi-15m-sell-bot-public"
+version = "41.22.2"
+description = "Experimental advanced dry-run learning preview of Kalshi 15-minute sell-management logic; order submission disabled."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+authors = [{name = "Gateway Information Group LLC"}]
+license = "MIT"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+  "requests==2.34.2",
+  "certifi==2026.6.17",
+  "cryptography==48.0.1",
+  "websockets==16.1.1",
+  "tzdata==2026.3",
+]
+
+[project.scripts]
+kalshi-sell-bot = "bot:main"
+
+[tool.setuptools]
+py-modules = ["bot", "public_safety", "kalshi_15m_sell_bot"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+exclude = [".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+severity = "medium"
+confidence = "medium"

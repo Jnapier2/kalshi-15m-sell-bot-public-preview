@@ -1,0 +1,335 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/certifi@2026.6.17",
+      "licenses": [
+        {
+          "expression": "MPL-2.0"
+        }
+      ],
+      "name": "certifi",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "direct"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/certifi@2026.6.17",
+      "scope": "required",
+      "type": "library",
+      "version": "2026.6.17"
+    },
+    {
+      "bom-ref": "pkg:pypi/cffi@2.1.0",
+      "licenses": [
+        {
+          "expression": "MIT-0"
+        }
+      ],
+      "name": "cffi",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/cffi@2.1.0",
+      "scope": "required",
+      "type": "library",
+      "version": "2.1.0"
+    },
+    {
+      "bom-ref": "pkg:pypi/charset-normalizer@3.4.9",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "name": "charset-normalizer",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/charset-normalizer@3.4.9",
+      "scope": "required",
+      "type": "library",
+      "version": "3.4.9"
+    },
+    {
+      "bom-ref": "pkg:pypi/cryptography@48.0.1",
+      "licenses": [
+        {
+          "expression": "Apache-2.0 OR BSD-3-Clause"
+        }
+      ],
+      "name": "cryptography",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "direct"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/cryptography@48.0.1",
+      "scope": "required",
+      "type": "library",
+      "version": "48.0.1"
+    },
+    {
+      "bom-ref": "pkg:pypi/idna@3.18",
+      "licenses": [
+        {
+          "expression": "BSD-3-Clause"
+        }
+      ],
+      "name": "idna",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/idna@3.18",
+      "scope": "required",
+      "type": "library",
+      "version": "3.18"
+    },
+    {
+      "bom-ref": "pkg:pypi/pycparser@3.0",
+      "licenses": [
+        {
+          "expression": "BSD-3-Clause"
+        }
+      ],
+      "name": "pycparser",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/pycparser@3.0",
+      "scope": "required",
+      "type": "library",
+      "version": "3.0"
+    },
+    {
+      "bom-ref": "pkg:pypi/requests@2.34.2",
+      "licenses": [
+        {
+          "expression": "Apache-2.0"
+        }
+      ],
+      "name": "requests",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "direct"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/requests@2.34.2",
+      "scope": "required",
+      "type": "library",
+      "version": "2.34.2"
+    },
+    {
+      "bom-ref": "pkg:pypi/tzdata@2026.3",
+      "licenses": [
+        {
+          "expression": "Apache-2.0"
+        }
+      ],
+      "name": "tzdata",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "direct"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/tzdata@2026.3",
+      "scope": "required",
+      "type": "library",
+      "version": "2026.3"
+    },
+    {
+      "bom-ref": "pkg:pypi/urllib3@2.7.0",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "name": "urllib3",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/urllib3@2.7.0",
+      "scope": "required",
+      "type": "library",
+      "version": "2.7.0"
+    },
+    {
+      "bom-ref": "pkg:pypi/websockets@16.1.1",
+      "licenses": [
+        {
+          "expression": "BSD-3-Clause"
+        }
+      ],
+      "name": "websockets",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "direct"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/websockets@16.1.1",
+      "scope": "required",
+      "type": "library",
+      "version": "16.1.1"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:pypi/certifi@2026.6.17",
+        "pkg:pypi/cryptography@48.0.1",
+        "pkg:pypi/requests@2.34.2",
+        "pkg:pypi/tzdata@2026.3",
+        "pkg:pypi/websockets@16.1.1"
+      ],
+      "ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/certifi@2026.6.17"
+    },
+    {
+      "dependsOn": [
+        "pkg:pypi/pycparser@3.0"
+      ],
+      "ref": "pkg:pypi/cffi@2.1.0"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/charset-normalizer@3.4.9"
+    },
+    {
+      "dependsOn": [
+        "pkg:pypi/cffi@2.1.0"
+      ],
+      "ref": "pkg:pypi/cryptography@48.0.1"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/idna@3.18"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/pycparser@3.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:pypi/certifi@2026.6.17",
+        "pkg:pypi/charset-normalizer@3.4.9",
+        "pkg:pypi/idna@3.18",
+        "pkg:pypi/urllib3@2.7.0"
+      ],
+      "ref": "pkg:pypi/requests@2.34.2"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/tzdata@2026.3"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/urllib3@2.7.0"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/websockets@16.1.1"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "kalshi-15m-sell-bot-public",
+      "purl": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2",
+      "type": "application",
+      "version": "41.22.2"
+    },
+    "properties": [
+      {
+        "name": "release:lock-file",
+        "value": "requirements.lock.txt"
+      },
+      {
+        "name": "release:network-used",
+        "value": "false"
+      }
+    ],
+    "timestamp": "2026-07-19T18:00:00Z",
+    "tools": {
+      "components": [
+        {
+          "name": "stdlib deterministic SBOM generator",
+          "type": "application",
+          "version": "1"
+        }
+      ]
+    }
+  },
+  "serialNumber": "urn:uuid:a29e934a-9ee3-5001-b07e-7885857dfb41",
+  "specVersion": "1.6",
+  "version": 1
+}

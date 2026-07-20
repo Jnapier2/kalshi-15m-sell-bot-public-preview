@@ -1,0 +1,46 @@
+name: Bug report
+description: Report reproducible behavior using demo or dry run
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include credentials, private keys, account IDs, balances, live orders, or unredacted logs."
+  - type: input
+    id: version
+    attributes:
+      label: Version and release SHA-256
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options: [verify, demo dry-run, demo order-capable, production dry-run, production order-capable]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Prefer demo/dry-run and the smallest repeatable case.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Sanitized environment
+      description: OS, Python version, and whether `python bot.py verify` passes.
+    validations:
+      required: true
