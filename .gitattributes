@@ -1,4 +1,5 @@
 * text=auto eol=lf
+kalshi_15m_sell_bot.py text eol=crlf
 *.bat text eol=crlf
 *.png binary
 *.jpg binary
