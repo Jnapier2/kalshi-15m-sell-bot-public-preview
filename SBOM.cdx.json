@@ -71,7 +71,7 @@
       "version": "3.4.9"
     },
     {
-      "bom-ref": "pkg:pypi/cryptography@48.0.1",
+      "bom-ref": "pkg:pypi/cryptography@49.0.0",
       "licenses": [
         {
           "expression": "Apache-2.0 OR BSD-3-Clause"
@@ -88,10 +88,10 @@
           "value": "requirements.lock.txt"
         }
       ],
-      "purl": "pkg:pypi/cryptography@48.0.1",
+      "purl": "pkg:pypi/cryptography@49.0.0",
       "scope": "required",
       "type": "library",
-      "version": "48.0.1"
+      "version": "49.0.0"
     },
     {
       "bom-ref": "pkg:pypi/idna@3.18",
@@ -254,7 +254,7 @@
     {
       "dependsOn": [
         "pkg:pypi/certifi@2026.6.17",
-        "pkg:pypi/cryptography@48.0.1",
+        "pkg:pypi/cryptography@49.0.0",
         "pkg:pypi/requests@2.34.2",
         "pkg:pypi/tzdata@2026.3",
         "pkg:pypi/websockets@16.1.1"
@@ -280,7 +280,7 @@
         "pkg:pypi/cffi@2.1.0",
         "pkg:pypi/typing-extensions@4.16.0"
       ],
-      "ref": "pkg:pypi/cryptography@48.0.1"
+      "ref": "pkg:pypi/cryptography@49.0.0"
     },
     {
       "dependsOn": [],
@@ -352,7 +352,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:225fa002-93de-598c-9806-d048030b2866",
+  "serialNumber": "urn:uuid:2d59f4d2-b152-5160-95be-5235c0fd9c1e",
   "specVersion": "1.6",
   "version": 1
 }
