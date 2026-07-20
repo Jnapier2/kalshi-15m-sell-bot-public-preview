@@ -60,9 +60,9 @@ Use a **Kalshi demo account and demo API key first**. Kalshi documents that demo
 
 The legacy `live` command and `run --live` option remain only to return a clear block message. For an order-capable workflow, use the separately reviewed **10x1c flagship**; do not modify this preview to trade.
 
-## What was sanitized
+## Preview boundary
 
-The preview excludes private workspace material, maintenance utilities, transient output, live-first launchers, project-local key discovery, and internal transfer records. The retained engine is wrapped with a small, testable safety boundary and a preview launcher.
+The published preview focuses on the dry-run engine and its testable safety boundary. Live-first launchers, project-local key discovery, maintenance tooling, transient output, and transfer records are outside its scope.
 
 Major changes include:
 
@@ -85,13 +85,12 @@ Read [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for evidence and limits.
 
 This dry-run preview has no verified live-money performance record and cannot place orders. Any price or quantity shown by the simulator is planning output—not proceeds, profit, or an expected return. See [docs/PROFIT_POTENTIAL.md](docs/PROFIT_POTENTIAL.md) for the distinction between arithmetic examples and evidence.
 
-## Why release it
+## Engineering focus
 
-This began as a practical experiment in turning an idea into a working automation system through rapid iteration. The lasting value came from the finishing work: source review, tests, bounded permissions, reversible defaults, and clear documentation.
-
-This public preview lets reviewers inspect a substantial system and explore
-market-automation design without enabling live-money actions. Read
-[docs/RELEASE_STORY.md](docs/RELEASE_STORY.md).
+This public preview makes its control boundary inspectable: reviewers can
+evaluate source structure, tests, threat modeling, deterministic packaging,
+data reconciliation, and operational safeguards without enabling live-money
+actions.
 
 ## Repository map
 
@@ -100,7 +99,6 @@ market-automation design without enabling live-money actions. Read
 - `kalshi_15m_sell_bot.py` — retained experimental strategy engine with preview safety boundaries.
 - `SECURITY_FIRST.md` — how a user verifies the release before trusting it.
 - `SECURITY_AUDIT.md` — findings, changes, checks, and residual risks.
-- `LINKEDIN_POST.md` — draft preview copy; not approved for posting.
 - `docs/THREAT_MODEL.md` — assets, attackers, controls, and non-goals.
 - `tests/` — safety and regression tests.
 - `scripts/` — release verification, security gate, and deterministic builder.
@@ -118,6 +116,4 @@ market-automation design without enabling live-money actions. Read
 Copyright © 2026 Gateway Information Group LLC.
 
 This public dry-run preview is released under the [MIT License](LICENSE.md).
-The deliberate owner decision is documented in
-[LICENSE_OPTIONS.md](LICENSE_OPTIONS.md), and dependency obligations remain in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Dependency obligations remain in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -10,7 +10,7 @@
 - Removed the hidden acknowledgment argument and all acknowledgment-based unlocking.
 - Changed `python bot.py run --live` and `python bot.py live` to fail with guidance to the separately reviewed 10x1c flagship.
 - Added regression tests for hostile environment values, runtime flag mutation, direct engine calls, removed `--ack` parsing, and pre-signing rejection.
-- Relabeled the package as an experimental advanced dry-run learning preview that is neither licensed nor approved for publication.
+- Relabeled the package as an experimental advanced dry-run preview with an immutable write barrier and no performance claims.
 
 ### Retained sell-planning scope
 
@@ -39,12 +39,12 @@
 ### Public usability
 
 - Replaced live-first batch entry points with `bot.py`, `SETUP_WINDOWS.bat`, `START_WINDOWS.bat`, and `setup.sh`.
-- Added security-first verification, quick start, risk, privacy, FAQ, portfolio copy, threat model, architecture, and vibecoding learning materials.
+- Added security-first verification, quick start, risk, privacy, FAQ, threat model, architecture, and release-integrity documentation.
 - Added local safety/regression tests and GitHub security workflows.
 
-### Sanitization
+### Release hardening
 
-- Excluded private workspace material, maintenance utilities, transient output, transfer records, legacy shims, and the internal setup writer.
+- Excluded operational data, maintenance utilities, transient output, transfer records, legacy shims, and the setup writer.
 - Confirmed the supplied archives contained no actual API key or private key material under the documented scan patterns.
 - Fixed inherited undefined-name defects detected during stricter static analysis.
 - Added deterministic manifest/archive metadata and SBOM-to-lock consistency tests.
@@ -52,4 +52,4 @@
 ### Important
 
 - Strategy behavior remains complex and has not been represented as independently profitable or formally verified.
-- The owner must select a public-use license before publication.
+- The source is published under the MIT License; platform terms and third-party obligations still apply.

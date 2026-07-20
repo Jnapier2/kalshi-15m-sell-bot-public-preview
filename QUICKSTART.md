@@ -10,7 +10,7 @@
 
 ## Windows
 
-1. Extract the release ZIP.
+1. Clone the repository or extract the project archive into a clean folder.
 2. Run `SETUP_WINDOWS.bat`.
 3. Run `START_WINDOWS.bat`.
 4. Choose **1 Verify**.

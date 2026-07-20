@@ -1,5 +1,6 @@
 * text=auto eol=lf
-kalshi_15m_sell_bot.py text eol=crlf
+# Preserve the engine's published CRLF bytes for deterministic integrity checks.
+kalshi_15m_sell_bot.py -text whitespace=cr-at-eol
 *.bat text eol=crlf
 *.png binary
 *.jpg binary

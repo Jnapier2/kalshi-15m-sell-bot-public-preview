@@ -61,7 +61,7 @@ def write_metadata(root: Path) -> dict[str, str]:
         "publication_status": "PUBLIC_DRY_RUN_PREVIEW",
         "public_preview_only": True,
         "preview_engine_sha256": sha256(root / "kalshi_15m_sell_bot.py"),
-        "release_lineage": "sanitized public-preview working tree; private workspace data excluded",
+        "release_lineage": "public dry-run preview; operational data and live-only tooling excluded",
         "security_profile": "experimental preview; immutable dry run; all mutations blocked before signing; exact official origins",
         "files": [{"path": path, "sha256": digest} for path, digest in records.items()],
     }

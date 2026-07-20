@@ -7,7 +7,7 @@ copies should be retired in favor of the latest verified release.
 
 ## Private reporting
 
-Report suspected vulnerabilities privately to the repository owner using a GitHub private vulnerability report or another private channel published on the owner’s portfolio site. Include:
+Report suspected vulnerabilities privately to the repository owner using GitHub's private vulnerability-reporting feature through the repository Security tab. Include:
 
 - affected version and SHA-256;
 - operating system and Python version;

@@ -43,4 +43,4 @@ The preview launcher is cross-platform. The original project was Windows-oriente
 
 The project is available under the MIT License. Preserve the copyright and
 permission notice, review the safety documentation, and verify the code in
-your own environment before use. See `LICENSE.md` and `LICENSE_OPTIONS.md`.
+your own environment before use. See `LICENSE.md`.

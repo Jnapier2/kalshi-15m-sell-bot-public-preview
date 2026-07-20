@@ -5,7 +5,7 @@ boundary around credentials, storage, network destinations, archives, crash
 diagnostics, and an immutable prohibition on mutating requests.
 
 Copyright © 2026 Gateway Information Group LLC. Licensed under the MIT License.
-A separate public-use license has not yet been selected by the owner.
+The preview remains dry-run-only and is not investment advice.
 """
 import atexit
 import base64

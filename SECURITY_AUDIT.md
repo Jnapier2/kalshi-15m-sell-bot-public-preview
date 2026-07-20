@@ -1,4 +1,4 @@
-# Security Audit and Sanitization Report — Dry-Run Preview
+# Security Audit and Release-Hardening Report — Dry-Run Preview
 
 **Build:** `41.22.2-public-preview`  
 **Audit date:** July 19, 2026  
@@ -10,15 +10,15 @@
 | Question | Verdict |
 |---|---|
 | Is this package suitable for controlled **demo/dry-run review**? | **Yes, as an experimental preview with documented residual risk.** Every mutating request is hard-blocked in the unmodified copy. |
-| What remains before publication? | The owner must activate a license and complete the publication checklist. |
+| What remains before broader use? | Keep the preview dry-run only, maintain the verification gates, and complete independent review before any order-capable edition. |
 | What is the production posture? | Production capability is intentionally unavailable in this preview. The retained engine remains an experimental learning system rather than a formally certified trading product. |
 | What does it show about performance? | Planning behavior and conditional arithmetic only. It makes no profit or loss-prevention promise. |
 
-A passing verification means the files match the current preview inventory and the documented baseline safeguards are present. It does not prove every strategy branch correct, protect a compromised computer, authorize publication, or establish profitability.
+A passing verification means the files match the current preview inventory and the documented baseline safeguards are present. It does not prove every strategy branch correct, protect a compromised computer, establish production suitability, or demonstrate profitability.
 
 ## Scope and provenance
 
-The review began with the supplied bot source and supporting workspace materials. The public preview retains only the engine, its small safety boundary and launcher, tests, user documentation, dependency records, and packaging tools. Private workspace material and internal workflow records are excluded, and their identifiers are not carried into the public manifest.
+The public preview is limited to the engine, its small safety boundary and launcher, tests, user documentation, dependency records, and packaging tools. The sealed inventory makes that boundary reviewable.
 
 The review covered source and batch files, dependency declarations, credential handling, authenticated network destinations, TLS/proxy behavior, order authorization, runtime storage, archive extraction, diagnostic privacy, release integrity, and public-facing claims.
 
@@ -32,7 +32,7 @@ The review covered source and batch files, dependency declarations, credential h
 | High | Requests inherited environment proxies, `.netrc`, redirects, and caller-controlled TLS settings. | **Fixed.** `trust_env=False`, empty proxies, no redirects, a pinned certifi CA bundle, and TLS 1.2+ are enforced. Custom CA/proxy/client-certificate overrides are rejected. |
 | High | The setup model favored a project-local unencrypted private key and a local batch config that set live mode. | **Fixed.** Configuration and keys are external to the repository; repository-local keys are rejected; Unix owner-only permissions are checked. |
 | High | Dependency ranges were broad and unhashed. | **Fixed.** Runtime and maintainer lock files use exact versions plus SHA-256 hashes; setup requires binary distributions and `--require-hashes`. |
-| High | Private workspace material, transient output, transfer records, and live-first compatibility launchers were mixed into the working set. | **Addressed for this preview.** They were removed. The preview contains the engine, small safety boundary and launcher, tests, docs, and packaging tooling. |
+| High | Operational data, transient output, transfer records, and live-first compatibility launchers were mixed into the working set. | **Addressed for this preview.** They were removed. The preview contains the engine, small safety boundary and launcher, tests, docs, and packaging tooling. |
 | Medium | Support ZIP extraction guarded basic traversal but had no member-count, size, compression-ratio, encryption, or link limits. | **Fixed.** Extraction is bounded and regular-file-only, with explicit traversal, link, device, encryption, size, count, and compression-bomb rejection. |
 | Medium | Crash reports included tracebacks, paths, state summaries, and log tails by default. | **Fixed.** Reports are summary-only and redacted unless a user deliberately enables sensitive diagnostics. |
 | Medium | The inherited engine contained undefined-name defects that syntax compilation did not detect. | **Fixed.** Undefined-name analysis and targeted regression tests were added; the identified defects were repaired. |
@@ -56,7 +56,7 @@ The engine independently fixes dry run on, ignores force-live environment values
 - Deterministic CycloneDX 1.6 SBOM generated from the runtime lock.
 - SBOM component inventory is checked against the lock file using only the Python standard library.
 - Every retained release file is whitelisted in `MANIFEST.json` and hashed in `SHA256SUMS.txt`.
-- The release ZIP uses fixed timestamps and stable ordering; its SHA-256 is published separately.
+- The deterministic builder uses fixed timestamps and stable ordering and can produce a ZIP with a SHA-256 sidecar.
 - GitHub workflows are included for Python 3.10–3.13 tests, Ruff, Bandit, `pip-audit`, detect-secrets, CodeQL, dependency review, and Dependabot.
 
 The GitHub Actions references use current major-version tags rather than immutable commit SHAs. Before a high-assurance production release, pin each action to a reviewed full commit SHA and let Dependabot propose deliberate updates.
@@ -66,7 +66,7 @@ The GitHub Actions references use current major-version tags rather than immutab
 ### Pre-seal and final local checks
 
 - Python compilation: **pass**.
-- Complete preview unit suite: **61 tests discovered; 59 passed and 2 platform-specific tests skipped on Windows**.
+- Complete preview unit suite: **62 tests discovered; 60 passed and 2 platform-specific tests skipped on Windows**.
 - Ruff: **pass**.
 - Bandit medium/high threshold: **0 findings**.
 - Full Bandit inventory: **134 low-severity findings**—111 broad exception-pass patterns, 8 exception-continue patterns, 5 false-positive “password” literals, 4 fixed-argument subprocess calls, 3 subprocess imports, and 3 non-cryptographic PRNG uses. These remain review debt; this report does not characterize the full Bandit scan as finding-free.
@@ -83,14 +83,13 @@ A local `pip-audit` run was attempted but could not reach `pypi.org` because DNS
 
 ### Final sealed evidence
 
-- Release integrity and whitelist verification: **pass** (`59` checksum records; `60` total release files including `SHA256SUMS.txt`; `58` records in the non-recursive manifest inventory).
+- Release integrity and whitelist verification: **pass** (`53` checksum records; `54` total release files including `SHA256SUMS.txt`; `52` records in the non-recursive manifest inventory).
 - Strict built-in security gate: **pass**.
-- Preview unit suite with updated inventory present: **61 tests discovered; 59 passed and 2 platform-specific tests skipped on Windows**.
+- Preview unit suite with updated inventory present: **62 tests discovered; 60 passed and 2 platform-specific tests skipped on Windows**.
 - Final manifest timestamp: deterministic `2026-07-19T18:00:00Z`.
 - The current preview engine SHA-256 is recorded in `MANIFEST.json` after each reviewed source change.
-- Earlier deterministic-build evidence applied to the predecessor package; this preview has not been licensed, published, or represented as a final archive.
+- Earlier deterministic-build evidence—including a 60-member ZIP structure check—applied to a predecessor package. The current preview is MIT-licensed and published as source with a 54-file release inventory; no packaged archive is currently claimed.
 - Local inventory verification, the baseline security gate, Ruff, and all applicable tests must pass before any reviewer handoff.
-- ZIP structure validation found **60 regular, unencrypted, contained members** and no links or traversal paths.
 
 ## User verification procedure
 
@@ -107,7 +106,7 @@ After installing the exact locked dependencies:
 python bot.py verify
 ```
 
-A user should also compare the downloaded ZIP’s SHA-256 with the separately published sidecar and confirm the release source is the owner’s authentic GitHub/portfolio channel. See `SECURITY_FIRST.md` for Windows, macOS, and Linux commands.
+If a packaged archive is published in the future, compare its SHA-256 with the separately published sidecar and confirm that it came from the official repository or release channel. See `SECURITY_FIRST.md` for Windows, macOS, and Linux commands.
 
 ## Residual risks and unverified areas
 
@@ -118,19 +117,18 @@ A user should also compare the downloaded ZIP’s SHA-256 with the separately pu
 5. **No profitability proof:** demo behavior, arithmetic examples, and passing software tests do not establish a repeatable market edge.
 6. **External systems change:** API schemas, rate limits, fees, market rules, eligibility, dependencies, and certificates require ongoing review.
 7. **Local compromise remains out of scope:** malware or an administrator can read keys, alter code, or interfere with traffic and process state.
-8. **License unresolved:** all-rights-reserved metadata is preserved. Broad public use remains legally unclear until the owner selects and installs a license.
+8. **License scope:** the preview is MIT-licensed, but downstream users remain responsible for third-party terms, platform rules, and their own use.
 
-## Publication gates
+## Broader-use gates
 
-Do not publish as a mass-use release until all of these are complete:
+Do not represent this preview as order-capable, production-ready, or broadly supported. Any broader release would require:
 
-1. Replace the placeholder `LICENSE.md` with the owner’s selected license and update package metadata.
-2. Run the online GitHub security workflow, including `pip-audit`, CodeQL, dependency review, and secret scanning.
-3. Enable GitHub private vulnerability reporting and add the repository-specific advisory link.
-4. Test setup, verify, configure, and dry run from a clean Windows machine and at least one Unix-like system.
-5. Download the exact release ZIP from the public release page and re-run the hash/inventory/security checks.
-6. Use only demo/mock data in screenshots and video.
-7. Keep production operation labeled experimental and manually supervised.
+1. Current online security workflows, including dependency auditing, CodeQL, dependency review, and secret scanning.
+2. Private vulnerability reporting and a repository-specific advisory path.
+3. Clean-machine setup, verification, configuration, and dry-run testing on Windows and a Unix-like system.
+4. Exact release-archive hash, inventory, and security verification after download.
+5. Demo or fabricated data in screenshots and video.
+6. Separate specialist review before any order-capable or production operation.
 
 ## Bottom line
 
