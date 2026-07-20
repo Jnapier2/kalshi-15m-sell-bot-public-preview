@@ -7723,53 +7723,36 @@ def auth_diagnostic_likely_fixes(status: str, public_ok: bool, signed_status_cod
 
 def write_auth_diagnostic_report(payload: dict) -> None:
     try:
-        payload = dict(payload or {})
-        payload.setdefault("generated_ts", now_ts())
-        payload.setdefault("generated_utc", datetime.now(timezone.utc).isoformat())
-        payload.setdefault("build_id", BUILD_ID)
-        payload.setdefault("base_url", BASE_URL)
-        payload.setdefault("base_host", urlparse(BASE_URL).netloc.lower())
-        payload.setdefault("active_environment", kalshi_environment_from_base_url(BASE_URL))
-        payload.setdefault("api_key_id_masked", mask_key_id(API_KEY_ID))
-        payload.setdefault("private_key_file", os.path.basename(PRIVATE_KEY_PATH or ""))
-        payload.setdefault("subaccount", SUBACCOUNT)
+        _ = payload
+        safe_payload = {
+            "generated_ts": now_ts(),
+            "generated_utc": datetime.now(timezone.utc).isoformat(),
+            "build_id": BUILD_ID,
+            "status": "public_preview",
+            "mode": "dry_run_only",
+            "sensitive_fields": "not_collected",
+        }
         if AUTH_DIAGNOSTIC_JSON_PATH:
-            atomic_write_json(AUTH_DIAGNOSTIC_JSON_PATH, payload)
+            atomic_write_json(AUTH_DIAGNOSTIC_JSON_PATH, safe_payload)
         if AUTH_DIAGNOSTIC_TXT_PATH:
             os.makedirs(os.path.dirname(AUTH_DIAGNOSTIC_TXT_PATH) or ".", exist_ok=True)
             lines = [
-                "Kalshi 15m Sell Bot - Auth Doctor Report",
-                "========================================",
-                f"generated_utc={payload.get('generated_utc','')}",
-                f"build_id={payload.get('build_id','')}",
-                f"status={payload.get('status','')}",
-                f"base_url={payload.get('base_url','')}",
-                f"active_environment={payload.get('active_environment','')}",
-                f"api_key_id_masked={payload.get('api_key_id_masked','')}",
-                f"private_key_file={payload.get('private_key_file','')}",
-                f"subaccount={payload.get('subaccount','')}",
-                f"public_exchange_status={payload.get('public_exchange_status','')}",
-                f"signed_endpoint={payload.get('signed_endpoint','')}",
-                f"signed_status={payload.get('signed_status','')}",
-                f"signed_status_code={payload.get('signed_status_code','')}",
-                f"signed_error_type={payload.get('signed_error_type','')}",
-                f"signed_error={payload.get('signed_error','')}",
-                f"timestamp_expired_detected={payload.get('timestamp_expired_detected','')}",
-                f"auth_timestamp_sync={payload.get('auth_timestamp_sync','')}",
-                f"auth_hint={payload.get('auth_hint','')}",
-                f"alternate_base_checks={payload.get('alternate_base_checks','')}",
-                "likely_fixes=",
+                "Kalshi 15m Sell Bot - Public Preview Diagnostic",
+                "================================================",
+                f"generated_utc={safe_payload['generated_utc']}",
+                f"build_id={safe_payload['build_id']}",
+                "status=public_preview",
+                "mode=dry_run_only",
+                "sensitive_fields=not_collected",
             ]
-            for idx, item in enumerate(payload.get("likely_fixes", []) or [], start=1):
-                lines.append(f"  {idx}. {item}")
             with open(AUTH_DIAGNOSTIC_TXT_PATH, "w", encoding="utf-8") as f:
                 f.write("\n".join(lines) + "\n")
     except Exception as e:
-        LOGGER.warning("Auth diagnostic report write failed: %s", e)
+        LOGGER.warning("Public preview diagnostic report was not written | error_type=%s", type(e).__name__)
 
 
 def run_auth_diagnostic() -> bool:
-    LOGGER.info("Auth diagnostic starting | base_url=%s | key_id=%s | key_file=%s | subaccount=%s", BASE_URL, mask_key_id(API_KEY_ID), os.path.basename(PRIVATE_KEY_PATH or ""), SUBACCOUNT)
+    LOGGER.info("Public preview authentication diagnostic starting; credential identifiers remain private")
     public_ok = False
     public_status = "not_run"
     public_status_payload = {}
@@ -7800,7 +7783,7 @@ def run_auth_diagnostic() -> bool:
     except Exception as e:
         public_status = f"failed:{type(e).__name__}"
         signed_error = safe_diag_error(e, 220)
-        LOGGER.warning("Auth diagnostic public exchange/status failed | %s", e)
+        LOGGER.warning("Public exchange status check needs review | error_type=%s", type(e).__name__)
     timestamp_sync = refresh_auth_timestamp_offset(BASE_URL, force=True, context="auth_diagnostic_before_balance")
     try:
         balance = signed_request("GET", "/portfolio/balance", params={"subaccount": SUBACCOUNT}, timeout=8, max_retries=1)
@@ -7818,7 +7801,7 @@ def run_auth_diagnostic() -> bool:
         }
         payload["likely_fixes"] = auth_diagnostic_likely_fixes("pass", public_ok)
         write_auth_diagnostic_report(payload)
-        LOGGER.info("Auth diagnostic signed portfolio/balance OK | balance_cents=%s | portfolio_value_cents=%s | updated_ts=%s | report_json=%s | report_txt=%s", balance.get("balance"), balance.get("portfolio_value"), balance.get("updated_ts"), AUTH_DIAGNOSTIC_JSON_PATH, AUTH_DIAGNOSTIC_TXT_PATH)
+        LOGGER.info("Signed endpoint diagnostic completed; account values and local paths were not logged")
         return True
     except KalshiAuthError as e:
         signed_exception = e
@@ -7828,7 +7811,7 @@ def run_auth_diagnostic() -> bool:
         signed_error = safe_diag_error(e)
         auth_hint = auth_error_hint(e)
         alt = diagnose_alt_environment()
-        LOGGER.error("Auth diagnostic signed portfolio/balance FAILED | %s%s", auth_hint, f" | {alt}" if alt else "")
+        LOGGER.error("Signed endpoint authentication check needs review; sensitive details were not logged")
     except KalshiEndpointUnsupported as e:
         signed_exception = e
         signed_status = "endpoint_unsupported"
@@ -7836,14 +7819,14 @@ def run_auth_diagnostic() -> bool:
         signed_error_type = type(e).__name__
         signed_error = safe_diag_error(e)
         auth_hint = auth_error_hint(e)
-        LOGGER.error("Auth diagnostic signed portfolio/balance returned 404/unsupported | %s", auth_hint)
+        LOGGER.error("Signed endpoint is unavailable in the selected environment; sensitive details were not logged")
     except Exception as e:
         signed_exception = e
         signed_status = "unexpected_failed"
         signed_status_code = getattr(e, "status_code", None)
         signed_error_type = type(e).__name__
         signed_error = safe_diag_error(e)
-        LOGGER.error("Auth diagnostic signed portfolio/balance failed unexpectedly | public_ok=%s | error=%s", public_ok, e)
+        LOGGER.error("Signed endpoint diagnostic needs review | error_type=%s", type(e).__name__)
     payload = {
         "status": "fail",
         "auth_timestamp_sync": _auth_timestamp_sync_snapshot(),
@@ -7860,7 +7843,7 @@ def run_auth_diagnostic() -> bool:
     }
     payload["likely_fixes"] = auth_diagnostic_likely_fixes("fail", public_ok, signed_status_code=signed_status_code, alt=alt, error=signed_exception)
     write_auth_diagnostic_report(payload)
-    LOGGER.error("Auth diagnostic report written | json=%s | txt=%s", AUTH_DIAGNOSTIC_JSON_PATH, AUTH_DIAGNOSTIC_TXT_PATH)
+    LOGGER.info("Public preview diagnostic summary recorded without credential, account, or path data")
     return False
 
 
@@ -7870,7 +7853,7 @@ def auth_preflight_or_exit() -> None:
     ok = run_auth_diagnostic()
     if ok:
         return
-    LOGGER.error("Authentication preflight failed before live trading. No orders were placed. Fix KALSHI_API_KEY_ID / KALSHI_PRIVATE_KEY_PATH / KALSHI_BASE_URL, or run START_HERE.bat option S. Auth Doctor report: json=%s txt=%s", AUTH_DIAGNOSTIC_JSON_PATH, AUTH_DIAGNOSTIC_TXT_PATH)
+    LOGGER.error("Authentication preflight needs review; no order-capable action was started")
     raise SystemExit(2)
 
 
@@ -38204,7 +38187,7 @@ def main():
             )
             write_live_startup_sla_report("account_limits_complete", "account API limits loaded", force=True)
         except KalshiAuthError as e:
-            LOGGER.warning("Could not read account API limits due auth/scope; continuing with configured self-throttle | %s", auth_error_hint(e))
+            LOGGER.warning("Account API limits were unavailable; configured self-throttling remains active")
         except Exception as e:
             LOGGER.warning("Could not read account API limits; continuing with configured self-throttle: %s", e)
     verify_order_group_tripwire_on_startup()
@@ -38215,7 +38198,7 @@ def main():
         write_live_startup_sla_report("startup_reconcile_complete", "startup reconcile completed", force=True)
         write_startup_to_sell_autorepair_dashboard(context="startup_reconcile_complete", force=True, mutate=False)
     except KalshiAuthError as e:
-        LOGGER.error("Startup reconciliation auth failure. No orders were placed after auth failure. %s", auth_error_hint(e))
+        LOGGER.error("Startup reconciliation stopped at authentication; no order-capable action continued")
         stop_websocket_listener()
         raise SystemExit(2)
     if RUN_ONCE:
@@ -38245,7 +38228,7 @@ def main():
             check_stop_request_or_exit()
             STATE.setdefault("meta", {})["last_loop_wait_reason"] = wait_reason
         except KalshiAuthError as e:
-            LOGGER.error("Top-level auth failure. Stopping bot instead of retrying blindly. %s", auth_error_hint(e))
+            LOGGER.error("Top-level authentication check stopped the process; no sensitive details were logged")
             stop_websocket_listener()
             raise SystemExit(2)
         except Exception as e:
