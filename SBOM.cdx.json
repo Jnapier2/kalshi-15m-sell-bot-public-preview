@@ -163,6 +163,24 @@
       "version": "2.34.2"
     },
     {
+      "bom-ref": "pkg:pypi/typing-extensions@4.16.0",
+      "name": "typing-extensions",
+      "properties": [
+        {
+          "name": "release:dependency-kind",
+          "value": "transitive"
+        },
+        {
+          "name": "release:version-source",
+          "value": "requirements.lock.txt"
+        }
+      ],
+      "purl": "pkg:pypi/typing-extensions@4.16.0",
+      "scope": "required",
+      "type": "library",
+      "version": "4.16.0"
+    },
+    {
       "bom-ref": "pkg:pypi/tzdata@2026.3",
       "licenses": [
         {
@@ -259,7 +277,8 @@
     },
     {
       "dependsOn": [
-        "pkg:pypi/cffi@2.1.0"
+        "pkg:pypi/cffi@2.1.0",
+        "pkg:pypi/typing-extensions@4.16.0"
       ],
       "ref": "pkg:pypi/cryptography@48.0.1"
     },
@@ -279,6 +298,10 @@
         "pkg:pypi/urllib3@2.7.0"
       ],
       "ref": "pkg:pypi/requests@2.34.2"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:pypi/typing-extensions@4.16.0"
     },
     {
       "dependsOn": [],
@@ -329,7 +352,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:a29e934a-9ee3-5001-b07e-7885857dfb41",
+  "serialNumber": "urn:uuid:225fa002-93de-598c-9806-d048030b2866",
   "specVersion": "1.6",
   "version": 1
 }

@@ -28,13 +28,14 @@ LICENSES = {
 }
 DEPENDENCIES = {
     "requests": {"certifi", "charset-normalizer", "idna", "urllib3"},
-    "cryptography": {"cffi"},
+    "cryptography": {"cffi", "typing-extensions"},
     "cffi": {"pycparser"},
     "certifi": set(),
     "charset-normalizer": set(),
     "idna": set(),
     "pycparser": set(),
     "tzdata": set(),
+    "typing-extensions": set(),
     "urllib3": set(),
     "websockets": set(),
 }
