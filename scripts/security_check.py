@@ -257,9 +257,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     failures, passes = run_checks(args.root, args.strict)
     if failures:
-        for failure in failures:
-            print(f"[FAIL] {failure}")
-        print(f"Security gate: FAIL ({len(failures)} issue(s))")
+        for index, _failure in enumerate(failures, start=1):
+            print(f"[ACTION] Security check {index} needs review; details remain in process memory.")
+        print(f"Security gate: ACTION NEEDED ({len(failures)} check(s))")
         return 1
     print("[PASS] Secret/binary surface scan")
     print("[PASS] Python syntax and prohibited-call scan")

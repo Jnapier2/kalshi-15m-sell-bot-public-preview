@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import stat
 import tempfile
@@ -214,6 +215,29 @@ class EngineGuardTests(unittest.TestCase):
         source = Path(self.engine.__file__).read_text(encoding="utf-8")
         self.assertIn('os.getenv("CRASH_REPORT_INCLUDE_SENSITIVE", "0")', source)
         self.assertIn("if CRASH_REPORT_INCLUDE_SENSITIVE else \"[REDACTED]\"", source)
+
+    def test_public_diagnostic_reports_do_not_persist_sensitive_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            json_path = Path(tmp) / "diagnostic.json"
+            text_path = Path(tmp) / "diagnostic.txt"
+            with (
+                mock.patch.object(self.engine, "AUTH_DIAGNOSTIC_JSON_PATH", str(json_path)),
+                mock.patch.object(self.engine, "AUTH_DIAGNOSTIC_TXT_PATH", str(text_path)),
+            ):
+                self.engine.write_auth_diagnostic_report(
+                    {
+                        "api_key_id": "public-test-key-id",
+                        "private_key_path": "C:/private/example.pem",
+                        "signed_error": "sensitive-response-body",
+                    }
+                )
+            json_text = json_path.read_text(encoding="utf-8")
+            text = text_path.read_text(encoding="utf-8")
+            combined = json_text + text
+            self.assertNotIn("public-test-key-id", combined)
+            self.assertNotIn("example.pem", combined)
+            self.assertNotIn("sensitive-response-body", combined)
+            self.assertEqual(json.loads(json_text)["sensitive_fields"], "not_collected")
 
 
 if __name__ == "__main__":

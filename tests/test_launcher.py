@@ -104,14 +104,14 @@ class LauncherTests(unittest.TestCase):
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
             bot.build_parser().parse_args(["run", "--ack", "anything"])
 
-    def test_status_masks_identifier(self):
+    def test_status_keeps_identifier_private(self):
         with mock.patch.object(bot, "_load_config", return_value=self.config()):
             stream = io.StringIO()
             with redirect_stdout(stream):
                 bot.cmd_status(argparse.Namespace())
         output = stream.getvalue()
         self.assertNotIn("sample-key-id-1234", output)
-        self.assertIn("samp…1234", output)
+        self.assertIn("stored privately", output)
 
     def test_parser_defaults_to_no_command(self):
         args = bot.build_parser().parse_args([])
