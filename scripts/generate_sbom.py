@@ -11,8 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 PROJECT_NAME = "kalshi-15m-sell-bot-public"
-PROJECT_VERSION = "41.22.2"
-DEFAULT_TIMESTAMP = "2026-07-19T18:00:00Z"
+PROJECT_VERSION = "41.22.3"
+DEFAULT_TIMESTAMP = "2026-07-25T00:00:00Z"
 DIRECT = {"requests", "certifi", "cryptography", "websockets", "tzdata"}
 LICENSES = {
     "certifi": "MPL-2.0",
@@ -135,6 +135,8 @@ def generate(root: Path, output: Path | None = None) -> Path:
             "properties": [
                 {"name": "release:lock-file", "value": "requirements.lock.txt"},
                 {"name": "release:network-used", "value": "false"},
+                {"name": "release:rights-notice", "value": "Copyright © 2026 Gateway Information Group LLC. All rights reserved."},
+                {"name": "release:license-status", "value": "MIT"},
             ],
         },
         "components": components,
