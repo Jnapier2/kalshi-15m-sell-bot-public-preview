@@ -1,0 +1,230 @@
+name: Idempotent 41.22.3 reseal gate
+
+on:
+  push:
+    branches: [agent/41-22-3-ci-bounds]
+    paths:
+      - .github/workflows/rebuild-41-22-3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sealed-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reseal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out latest maintenance branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: agent/41-22-3-ci-bounds
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply idempotent bounded maintenance changes
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import re
+          from pathlib import Path
+
+          ROOT = Path('.')
+          OLD = '41.22.2'
+          NEW = '41.22.3'
+          RIGHTS = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          TIMESTAMP = '2026-07-25T02:45:00Z'
+
+          def ensure_replace(path: str, old: str, new: str) -> None:
+              target = ROOT / path
+              text = target.read_text(encoding='utf-8')
+              if new in text and old not in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected exactly one old value or the new value')
+              target.write_text(text.replace(old, new), encoding='utf-8', newline='\n')
+
+          ensure_replace('pyproject.toml', 'version = "41.22.2"', 'version = "41.22.3"')
+          ensure_replace('scripts/build_release.py', '"version": "41.22.2"', '"version": "41.22.3"')
+          ensure_replace('scripts/generate_sbom.py', 'PROJECT_VERSION = "41.22.2"', 'PROJECT_VERSION = "41.22.3"')
+          ensure_replace(
+              'scripts/build_release.py',
+              'DEFAULT_RELEASE_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_RELEASE_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          ensure_replace(
+              'scripts/generate_sbom.py',
+              'DEFAULT_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          ensure_replace(
+              'scripts/build_release.py',
+              '"rights_notice": "Copyright © 2026 Gateway Information Group LLC. Licensed under the MIT License.",',
+              f'"rights_notice": "{RIGHTS}",',
+          )
+
+          sbom_path = ROOT / 'scripts/generate_sbom.py'
+          sbom = sbom_path.read_text(encoding='utf-8')
+          marker = '                "licenses": [{"license": {"id": "MIT"}}],\n'
+          addition = marker + f'                "copyright": "{RIGHTS}",\n'
+          if addition not in sbom:
+              if sbom.count(marker) != 1:
+                  raise SystemExit('scripts/generate_sbom.py: component metadata marker drifted')
+              sbom = sbom.replace(marker, addition)
+              sbom_path.write_text(sbom, encoding='utf-8', newline='\n')
+
+          for path in ('README.md', 'RELEASE_NOTES.md', 'SECURITY_AUDIT.md'):
+              target = ROOT / path
+              if target.exists():
+                  text = target.read_text(encoding='utf-8')
+                  if OLD in text:
+                      target.write_text(text.replace(OLD, NEW), encoding='utf-8', newline='\n')
+
+          version_pattern = re.compile(
+              r'(?m)^(?P<prefix>\s*(?:__version__|APP_VERSION|VERSION|RELEASE_VERSION)\s*=\s*["\'])'
+              + re.escape(OLD)
+              + r'(?P<suffix>["\'])'
+          )
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              updated, count = version_pattern.subn(r'\g<prefix>' + NEW + r'\g<suffix>', text)
+              if count:
+                  target.write_text(updated, encoding='utf-8', newline='\n')
+
+          stale = re.compile(r'(?i)no public[- ]use license[^\n.]*\.?')
+          replacement = 'This public dry-run preview is released under the MIT License; see LICENSE.md.'
+          stale_count = 0
+          replacement_files = []
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              updated, count = stale.subn(replacement, text)
+              if count:
+                  stale_count += count
+                  replacement_files.append(target.as_posix())
+                  target.write_text(updated, encoding='utf-8', newline='\n')
+          if stale_count == 0:
+              existing = []
+              for target in sorted(ROOT.rglob('*.py')):
+                  if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                      continue
+                  if replacement in target.read_text(encoding='utf-8'):
+                      existing.append(target.as_posix())
+              if len(existing) < 2:
+                  raise SystemExit(f'Expected corrected MIT source headers; found {existing}')
+              replacement_files = existing
+          elif stale_count != 2:
+              raise SystemExit(f'Expected two stale license phrases, replaced {stale_count}')
+
+          workflow_path = ROOT / '.github/workflows/security.yml'
+          workflow = workflow_path.read_text(encoding='utf-8')
+          if '\nconcurrency:\n' not in workflow:
+              marker = 'permissions:\n  contents: read\n'
+              block = (
+                  marker
+                  + '\nconcurrency:\n'
+                  + '  group: security-verification-${{ github.workflow }}-${{ github.ref }}\n'
+                  + '  cancel-in-progress: true\n'
+              )
+              if workflow.count(marker) != 1:
+                  raise SystemExit('security.yml: permissions block drifted')
+              workflow = workflow.replace(marker, block)
+          job1 = '  test-and-audit:\n    runs-on: ubuntu-latest\n'
+          if job1 + '    timeout-minutes: 20\n' not in workflow:
+              if workflow.count(job1) != 1:
+                  raise SystemExit('security.yml: test-and-audit block drifted')
+              workflow = workflow.replace(job1, job1 + '    timeout-minutes: 20\n')
+          job2 = '  cross-platform-smoke:\n    runs-on: ${{ matrix.os }}\n'
+          if job2 + '    timeout-minutes: 10\n' not in workflow:
+              if workflow.count(job2) != 1:
+                  raise SystemExit('security.yml: cross-platform block drifted')
+              workflow = workflow.replace(job2, job2 + '    timeout-minutes: 10\n')
+          workflow_path.write_text(workflow, encoding='utf-8', newline='\n')
+
+          changelog_path = ROOT / 'CHANGELOG.md'
+          changelog = changelog_path.read_text(encoding='utf-8')
+          heading = '## 41.22.3 — 2026-07-25\n'
+          if heading not in changelog:
+              entry = (
+                  heading
+                  + '\n'
+                  + '- Added bounded timeouts and superseded-run cancellation to the security workflow.\n'
+                  + '- Normalized MIT license wording in source headers.\n'
+                  + '- Added the canonical Gateway rights notice to the manifest and CycloneDX package metadata before resealing.\n'
+                  + '- Rebuilt the SBOM, manifest, and SHA-256 inventory without changing the immutable dry-run or mutation-blocking boundary.\n\n'
+              )
+              pos = changelog.find('\n## ')
+              changelog = (
+                  changelog.rstrip() + '\n\n' + entry
+                  if pos < 0
+                  else changelog[: pos + 1] + entry + changelog[pos + 1 :]
+              )
+              changelog_path.write_text(changelog, encoding='utf-8', newline='\n')
+
+          for temporary in (
+              '.github/workflows/maintenance-source-export.yml',
+              '.github/workflows/rebuild-41-22-3.yml',
+          ):
+              Path(temporary).unlink(missing_ok=True)
+
+          print('41.22.3 maintenance changes ready')
+          print('MIT source headers:', ', '.join(replacement_files))
+          PY
+
+      - name: Generate canonical metadata before final hashing
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python scripts/build_release.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rights = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          manifest = json.loads(Path('MANIFEST.json').read_text(encoding='utf-8'))
+          sbom = json.loads(Path('SBOM.cdx.json').read_text(encoding='utf-8'))
+          assert manifest['version'] == '41.22.3'
+          assert manifest['rights_notice'] == rights
+          assert manifest['license_status'] == 'MIT'
+          component = sbom['metadata']['component']
+          assert component['version'] == '41.22.3'
+          assert component['copyright'] == rights
+          assert not Path('.github/workflows/maintenance-source-export.yml').exists()
+          assert not Path('.github/workflows/rebuild-41-22-3.yml').exists()
+          print('Canonical manifest and package rights metadata verified')
+          PY
+
+      - name: Verify complete resealed source
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python -m compileall -q bot.py public_safety.py kalshi_15m_sell_bot.py scripts tests
+          python scripts/verify_release.py
+          python scripts/security_check.py --strict
+          python -m unittest discover -s tests -v
+          python bot.py status
+          git diff --check
+
+      - name: Commit without force-pushing
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'Jerry R. Napier'
+          git config user.email 'Jnapier2@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'No reseal changes to commit'; exit 1; }
+          git commit -m 'Release 41.22.3 bounded CI maintenance' \
+            -m 'Rebuild the checksum-sealed public dry-run preview with bounded security workflow execution, corrected MIT source headers, synchronized version metadata, canonical Gateway rights metadata, and regenerated SBOM/manifest/checksums. Runtime trading mutations remain blocked.' \
+            -m 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          git push origin HEAD:agent/41-22-3-ci-bounds
+
+# Copyright © 2026 Gateway Information Group LLC. All rights reserved.
