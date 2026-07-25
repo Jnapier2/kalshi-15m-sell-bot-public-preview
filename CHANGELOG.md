@@ -1,5 +1,13 @@
 # Changelog
 
+## 41.22.3-public-preview — 2026-07-25
+
+- Added bounded timeouts and superseded-run cancellation to every GitHub security workflow.
+- Pinned GitHub Actions to the exact revisions validated by the maintenance pass.
+- Normalized first-party rights metadata to `Copyright © 2026 Gateway Information Group LLC. All rights reserved.` while preserving the MIT License and third-party notices separately.
+- Added the canonical rights notice and license status to CycloneDX SBOM metadata before regenerating the manifest and SHA-256 inventory.
+- Preserved the public-preview-only mutation block, strategy behavior, dependency pins, endpoint allowlists, and local-data boundaries.
+
 ## 41.22.2-public-preview — 2026-07-19
 
 ### Hard-blocked dry-run preview
