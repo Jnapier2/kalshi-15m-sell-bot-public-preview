@@ -113,7 +113,7 @@ actions.
 
 ## License
 
-Copyright © 2026 Gateway Information Group LLC.
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.
 
-This public dry-run preview is released under the [MIT License](LICENSE.md).
+This ownership notice does not replace or infer a license. This public dry-run preview is released under the [MIT License](LICENSE.md).
 Dependency obligations remain in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
