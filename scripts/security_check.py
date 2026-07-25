@@ -152,8 +152,13 @@ def _check_sbom(root: Path, failures: list[str]) -> None:
             failures.append("SBOM component inventory does not match requirements.lock.txt")
         metadata = document.get("metadata", {})
         application = metadata.get("component", {}) if isinstance(metadata, dict) else {}
-        if application.get("name") != "kalshi-15m-sell-bot-public" or application.get("version") != "41.22.2":
+        if application.get("name") != "kalshi-15m-sell-bot-public" or application.get("version") != "41.22.3":
             failures.append("SBOM application identity is incorrect")
+        properties = {item.get("name"): item.get("value") for item in metadata.get("properties", []) if isinstance(item, dict)}
+        if properties.get("release:rights-notice") != "Copyright © 2026 Gateway Information Group LLC. All rights reserved.":
+            failures.append("SBOM is missing the canonical Gateway rights notice")
+        if properties.get("release:license-status") != "MIT":
+            failures.append("SBOM license status is not MIT")
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         failures.append(f"SBOM.cdx.json is invalid: {exc}")
 
