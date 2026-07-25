@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kalshi-15m-sell-bot-public"
-version = "41.22.2"
+version = "41.22.3"
 description = "Experimental advanced dry-run learning preview of Kalshi 15-minute sell-management logic; order submission disabled."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"

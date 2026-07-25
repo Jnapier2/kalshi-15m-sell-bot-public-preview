@@ -15,7 +15,7 @@ from generate_sbom import generate as generate_sbom
 
 IGNORED_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", "build", "dist"}
 GENERATED = {"SHA256SUMS.txt", "MANIFEST.json"}
-DEFAULT_RELEASE_TIMESTAMP = "2026-07-19T18:00:00Z"
+DEFAULT_RELEASE_TIMESTAMP = "2026-07-25T00:00:00Z"
 
 
 def release_timestamp() -> str:
@@ -53,10 +53,10 @@ def write_metadata(root: Path) -> dict[str, str]:
     records = {rel: sha256(path) for rel, path in source_files(root)}
     manifest = {
         "project": "kalshi-15m-sell-bot-public-preview",
-        "version": "41.22.2",
+        "version": "41.22.3",
         "generated_utc": release_timestamp(),
         "rights_holder": "Gateway Information Group LLC",
-        "rights_notice": "Copyright © 2026 Gateway Information Group LLC. Licensed under the MIT License.",
+        "rights_notice": "Copyright © 2026 Gateway Information Group LLC. All rights reserved.",
         "license_status": "MIT",
         "publication_status": "PUBLIC_DRY_RUN_PREVIEW",
         "public_preview_only": True,
@@ -86,7 +86,7 @@ def write_metadata(root: Path) -> dict[str, str]:
 
 
 def make_zip(root: Path, output: Path) -> None:
-    epoch = (2026, 7, 18, 12, 0, 0)
+    epoch = (2026, 7, 25, 0, 0, 0)
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for rel, path in sorted((p.relative_to(root).as_posix(), p) for p in root.rglob("*") if p.is_file() and not any(part in IGNORED_DIRS for part in p.relative_to(root).parts)):
             info = zipfile.ZipInfo(f"kalshi-15m-sell-bot-public-preview/{rel}", date_time=epoch)

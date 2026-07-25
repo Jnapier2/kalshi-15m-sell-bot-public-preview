@@ -28,7 +28,10 @@ class SbomTests(unittest.TestCase):
         self.assertEqual(document["bomFormat"], "CycloneDX")
         self.assertEqual(document["specVersion"], "1.6")
         self.assertEqual(document["metadata"]["component"]["name"], "kalshi-15m-sell-bot-public")
-        self.assertEqual(document["metadata"]["component"]["version"], "41.22.2")
+        self.assertEqual(document["metadata"]["component"]["version"], "41.22.3")
+        properties = {item["name"]: item["value"] for item in document["metadata"]["properties"]}
+        self.assertEqual(properties["release:rights-notice"], "Copyright © 2026 Gateway Information Group LLC. All rights reserved.")
+        self.assertEqual(properties["release:license-status"], "MIT")
 
     def test_sbom_components_match_runtime_lock(self) -> None:
         document = json.loads((ROOT / "SBOM.cdx.json").read_text(encoding="utf-8"))

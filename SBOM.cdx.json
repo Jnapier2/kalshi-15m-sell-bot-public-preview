@@ -259,7 +259,7 @@
         "pkg:pypi/tzdata@2026.3",
         "pkg:pypi/websockets@16.1.1"
       ],
-      "ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2"
+      "ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.3"
     },
     {
       "dependsOn": [],
@@ -318,7 +318,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2",
+      "bom-ref": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.3",
       "licenses": [
         {
           "license": {
@@ -327,9 +327,9 @@
         }
       ],
       "name": "kalshi-15m-sell-bot-public",
-      "purl": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.2",
+      "purl": "pkg:pypi/kalshi-15m-sell-bot-public@41.22.3",
       "type": "application",
-      "version": "41.22.2"
+      "version": "41.22.3"
     },
     "properties": [
       {
@@ -339,9 +339,17 @@
       {
         "name": "release:network-used",
         "value": "false"
+      },
+      {
+        "name": "release:rights-notice",
+        "value": "Copyright © 2026 Gateway Information Group LLC. All rights reserved."
+      },
+      {
+        "name": "release:license-status",
+        "value": "MIT"
       }
     ],
-    "timestamp": "2026-07-19T18:00:00Z",
+    "timestamp": "2026-07-25T00:00:00Z",
     "tools": {
       "components": [
         {
@@ -352,7 +360,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:225fa002-93de-598c-9806-d048030b2866",
+  "serialNumber": "urn:uuid:2374987f-42d7-52de-90aa-e7c31f6b6c50",
   "specVersion": "1.6",
   "version": 1
 }

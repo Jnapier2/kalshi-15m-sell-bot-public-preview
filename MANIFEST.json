@@ -34,15 +34,15 @@
     },
     {
       "path": ".github/workflows/codeql.yml",
-      "sha256": "680ff704111526bd7d4c48afbaff060dbe16c01ec6c581d1d7bbef1c598bad39"
+      "sha256": "a04fedc20871d07f606b9686a3f931f1b9781f8b505b4bb30624b4f521b8c93d"
     },
     {
       "path": ".github/workflows/dependency-review.yml",
-      "sha256": "c6b99c1ac91b33bf473249655715ebb1ccfa16cb150f1198057a6118a1a620a3"
+      "sha256": "f4ca3695692f47d7c15c501ad96af7434c827be46feed10ab44a4eead13c7adf"
     },
     {
       "path": ".github/workflows/security.yml",
-      "sha256": "1a0bb0a19ca484b056f1c8101f7b7473207817fe5bcd3be3d004c04988af8de9"
+      "sha256": "cdd56d0a337e29ca47ffec78a2cfd8b6a27fa525c9b0cd851f9be21bc9e57e7f"
     },
     {
       "path": ".gitignore",
@@ -54,7 +54,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "9b4ffcc0ec9ba27e71abe9edb6eca73ebc81737e84388643b79da0560a2b5e06"
+      "sha256": "0f62b807f647e686693602739102055d8fff9904d8211d7de8b558954c0a8ed7"
     },
     {
       "path": "CODE_OF_CONDUCT.md",
@@ -86,7 +86,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "5b9a2cf0480443b0fa160eb5328e264a6e22e71ade5ad2f1db04ba01863032f3"
+      "sha256": "4dd6f5e3b0e5282467d1472a4512cb0e21a4aa10d440d2d3ec210ac990e7dd00"
     },
     {
       "path": "RISK_DISCLOSURE.md",
@@ -94,7 +94,7 @@
     },
     {
       "path": "SBOM.cdx.json",
-      "sha256": "ad7b60b38771e555c2c372778855d84cf1aef59a4a96abe640484a5db7d69e2c"
+      "sha256": "f174e79889c493d880b225002d0716312958286a507a1bb49d9619a0e512c0dc"
     },
     {
       "path": "SECURITY.md",
@@ -102,11 +102,11 @@
     },
     {
       "path": "SECURITY_AUDIT.md",
-      "sha256": "34ffc06a94684aa668371a4396a74fe798aa65f6368ec3f9c7328c4d3e271a80"
+      "sha256": "4d36a069b7eef5d1bcf2a044506195b5b059f0d103979caca0bc1b6b3fffb2db"
     },
     {
       "path": "SECURITY_FIRST.md",
-      "sha256": "bc42638fc8a83685879051179f744e5745ab7e67a8d39d30ad1b80b16586bf98"
+      "sha256": "cd0695ca9ae9a351b4b24d7d0d1d56d9419b907c5d195a350149917dd845e1e9"
     },
     {
       "path": "SETUP_WINDOWS.bat",
@@ -146,7 +146,7 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "c1eac86efb45f6e74bec7a14b021b80dd25df8a76cc8b13d656fcc0ebe2de20a"
+      "sha256": "570f99e20d2c8eec740267d7024deaa26b366708eb6b48a0448a16e6c3976b9f"
     },
     {
       "path": "requirements-dev.lock.txt",
@@ -170,15 +170,15 @@
     },
     {
       "path": "scripts/build_release.py",
-      "sha256": "535c402e30b6017606f0234bc0ff9a8d1936fc11a7c2d5a1e5671cdd04241149"
+      "sha256": "f460d940350ecee64c3c30e08c8ed4684c8d8f255d39c1eee1dbc7188ce4a03c"
     },
     {
       "path": "scripts/generate_sbom.py",
-      "sha256": "59f497f9809535721558fde688aadbf156a1f4d6a96f4b20314ad4b41bd9e5f7"
+      "sha256": "465ce31f47e916a6bcacef9e98620218dc2a25f53d4a13fb812cb400e354078e"
     },
     {
       "path": "scripts/security_check.py",
-      "sha256": "fe841e4f33f4a336567bad10cf1bc0cc05572a531897ca138826f3459e908420"
+      "sha256": "0b9171718b9c2373ebfdbdc313400caf47a9ebe1aea4a9addd80e4c7feab4eb0"
     },
     {
       "path": "scripts/verify_release.py",
@@ -206,10 +206,10 @@
     },
     {
       "path": "tests/test_sbom.py",
-      "sha256": "9c87e6aac9a7e0663fa02d8683999322a1d657c9eb47a47d7f864b9d24948ec7"
+      "sha256": "07620a6bd5249ef1ef8783765bd4e3491cf444b42944bb9500effb550eb7b3ba"
     }
   ],
-  "generated_utc": "2026-07-19T18:00:00Z",
+  "generated_utc": "2026-07-25T00:00:00Z",
   "license_status": "MIT",
   "preview_engine_sha256": "1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38",
   "project": "kalshi-15m-sell-bot-public-preview",
@@ -217,7 +217,7 @@
   "publication_status": "PUBLIC_DRY_RUN_PREVIEW",
   "release_lineage": "public dry-run preview; operational data and live-only tooling excluded",
   "rights_holder": "Gateway Information Group LLC",
-  "rights_notice": "Copyright \u00a9 2026 Gateway Information Group LLC. Licensed under the MIT License.",
+  "rights_notice": "Copyright © 2026 Gateway Information Group LLC. All rights reserved.",
   "security_profile": "experimental preview; immutable dry run; all mutations blocked before signing; exact official origins",
-  "version": "41.22.2"
+  "version": "41.22.3"
 }

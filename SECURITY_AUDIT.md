@@ -1,7 +1,7 @@
 # Security Audit and Release-Hardening Report — Dry-Run Preview
 
-**Build:** `41.22.2-public-preview`  
-**Audit date:** July 19, 2026  
+**Build:** `41.22.3-public-preview`  
+**Audit date:** July 25, 2026  
 **Owner metadata:** Gateway Information Group LLC  
 **Audit type:** Best-effort source review, hardening, packaging, and local verification—not a third-party penetration test or financial-performance certification.
 
@@ -59,7 +59,7 @@ The engine independently fixes dry run on, ignores force-live environment values
 - The deterministic builder uses fixed timestamps and stable ordering and can produce a ZIP with a SHA-256 sidecar.
 - GitHub workflows are included for Python 3.10–3.13 tests, Ruff, Bandit, `pip-audit`, detect-secrets, CodeQL, dependency review, and Dependabot.
 
-The GitHub Actions references use current major-version tags rather than immutable commit SHAs. Before a high-assurance production release, pin each action to a reviewed full commit SHA and let Dependabot propose deliberate updates.
+The GitHub Actions references are pinned to reviewed full commit SHAs. Dependabot may propose deliberate maintenance updates, which must pass the same bounded verification gates before adoption.
 
 ## Verification evidence
 
@@ -81,12 +81,19 @@ The GitHub Actions references use current major-version tags rather than immutab
 
 A local `pip-audit` run was attempted but could not reach `pypi.org` because DNS/network access was unavailable in the audit sandbox. Therefore this report does **not** claim a completed vulnerability-database audit. The repository workflow runs `pip-audit` on every push and pull request; the owner should require that online job to pass immediately before publishing each release.
 
-### Final sealed evidence
+### 41.22.3 maintenance controls
+
+- All GitHub security jobs have explicit execution time limits and workflow-level superseded-run cancellation.
+- Checkout, Python setup, CodeQL, and dependency-review Actions are pinned to reviewed commit SHAs.
+- The canonical Gateway rights notice and MIT license status are carried separately in manifest/SBOM metadata before hashing.
+- The retained strategy engine behavior and immutable public-preview mutation block remain unchanged.
+
+## Final sealed evidence
 
 - Release integrity and whitelist verification: **pass** (`53` checksum records; `54` total release files including `SHA256SUMS.txt`; `52` records in the non-recursive manifest inventory).
 - Strict built-in security gate: **pass**.
 - Preview unit suite with updated inventory present: **62 tests discovered; 60 passed and 2 platform-specific tests skipped on Windows**.
-- Final manifest timestamp: deterministic `2026-07-19T18:00:00Z`.
+- Final manifest timestamp: deterministic `2026-07-25T00:00:00Z`.
 - The current preview engine SHA-256 is recorded in `MANIFEST.json` after each reviewed source change.
 - Earlier deterministic-build evidence—including a 60-member ZIP structure check—applied to a predecessor package. The current preview is MIT-licensed and published as source with a 54-file release inventory; no packaged archive is currently claimed.
 - Local inventory verification, the baseline security gate, Ruff, and all applicable tests must pass before any reviewer handoff.
