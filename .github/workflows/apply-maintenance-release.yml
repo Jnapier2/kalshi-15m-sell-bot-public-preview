@@ -1,10 +1,7 @@
 name: Apply verified 41.22.3 maintenance release
 
 on:
-  push:
-    branches: [agent/41-22-3-ci-bounds]
-    paths:
-      - .github/workflows/apply-maintenance-release.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
