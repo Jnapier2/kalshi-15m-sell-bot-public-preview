@@ -1,0 +1,238 @@
+name: Apply verified 41.22.3 maintenance release
+
+on:
+  push:
+    branches: [agent/41-22-3-ci-bounds]
+    paths:
+      - .github/workflows/apply-maintenance-release.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-41-22-3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact maintenance branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and authenticate exact patch
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          mkdir -p maintenance-report
+          printf '%s\n' \
+            'Copyright © 2026 Gateway Information Group LLC. All rights reserved.' \
+            > maintenance-report/RIGHTS_NOTICE.txt
+
+          cat > maintenance-report/expected-parts.sha256 <<'EOF'
+          a6ba8090c4b6f6aec5d611dfd62dc865a968039bc35929b28199b6596dbb607f  release-input/maintenance-41.22.3-patch.b64.part-00
+          39c2e3f1c46381f83edb1890659af1065a69d5b01c04901560df5ffce16b9cac  release-input/maintenance-41.22.3-patch.b64.part-01
+          a5f4c9879e62fcdcc9ec97939f4994a2b811b82dfac739b29bb93664917c4b58  release-input/maintenance-41.22.3-patch.b64.part-02
+          b12fdbf311b6a3e003ac509940f3c9005b9c8dd59d4036c40ba47f3148259220  release-input/maintenance-41.22.3-patch.b64.part-03
+          a9e120806272c048bcd89506ae7594fd4f0786fc9792c383d2ddac130ea82e45  release-input/maintenance-41.22.3-patch.b64.part-04
+          41b3b68466c6ea96b973db8e7a62966e1b1abdd8fd65dfc52f8cb3a3a831a8a4  release-input/maintenance-41.22.3-patch.b64.part-05
+          72094052ad391611f8eb12c090feff5ac97cdb7273dc70e26c760f5bb0db3157  release-input/maintenance-41.22.3-patch.b64.part-06
+          ccac932bdaf7a143e57bc37f17a735d9a963f8e17e5ad2e6bebadd6fdb3e0681  release-input/maintenance-41.22.3-patch.b64.part-07
+          307af4d8f2e6dde6c5f1ddcfb1cd3f1c1271a326672f09e64177d371a7f17260  release-input/maintenance-41.22.3-patch.b64.part-08
+          EOF
+          sha256sum --check --strict maintenance-report/expected-parts.sha256 \
+            | tee maintenance-report/part-hash-check.txt
+
+          mapfile -t parts < <(find release-input -maxdepth 1 -type f \
+            -name 'maintenance-41.22.3-patch.b64.part-*' | LC_ALL=C sort)
+          test "${#parts[@]}" -eq 9
+          cat "${parts[@]}" > /tmp/maintenance-41.22.3-patch.b64
+          test "$(stat -c %s /tmp/maintenance-41.22.3-patch.b64)" -eq 50532
+          base64 --decode /tmp/maintenance-41.22.3-patch.b64 \
+            > /tmp/maintenance-41.22.3-patch.tar.gz
+          test "$(stat -c %s /tmp/maintenance-41.22.3-patch.tar.gz)" -eq 37899
+          printf '%s  %s\n' \
+            '434999105fd480912453b99552f180129eeb0cf6ad06812b6b5c6d01f474e79' \
+            '/tmp/maintenance-41.22.3-patch.tar.gz' \
+            | sha256sum --check --strict - \
+            | tee maintenance-report/patch-hash-check.txt
+
+      - name: Validate and apply bounded patch
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tarfile
+
+          expected = {
+              '.github/workflows/codeql.yml',
+              '.github/workflows/dependency-review.yml',
+              '.github/workflows/security.yml',
+              'CHANGELOG.md',
+              'LICENSE.md',
+              'MANIFEST.json',
+              'README.md',
+              'SBOM.cdx.json',
+              'SECURITY_AUDIT.md',
+              'SECURITY_FIRST.md',
+              'SHA256SUMS.txt',
+              'bot.py',
+              'public_safety.py',
+              'pyproject.toml',
+              'scripts/build_release.py',
+              'scripts/generate_sbom.py',
+              'scripts/security_check.py',
+              'tests/test_release_integrity.py',
+              'tests/test_sbom.py',
+          }
+          archive = Path('/tmp/maintenance-41.22.3-patch.tar.gz')
+          with tarfile.open(archive, 'r:gz') as handle:
+              files = set()
+              for member in handle.getmembers():
+                  raw = member.name
+                  while raw.startswith('./'):
+                      raw = raw[2:]
+                  path = PurePosixPath(raw)
+                  if not raw or path.is_absolute() or '..' in path.parts:
+                      raise SystemExit(f'unsafe patch path: {member.name!r}')
+                  if member.issym() or member.islnk() or member.isdev():
+                      raise SystemExit(f'unsupported patch member: {member.name!r}')
+                  if member.isfile():
+                      files.add(path.as_posix())
+              if files != expected:
+                  raise SystemExit(
+                      f'patch file set mismatch; missing={sorted(expected-files)} '
+                      f'unexpected={sorted(files-expected)}'
+                  )
+              handle.extractall(Path('.'), filter='data')
+          Path('maintenance-report/PATCH_FILES.txt').write_text(
+              '\n'.join(sorted(files)) + '\n', encoding='utf-8'
+          )
+          print(f'Applied {len(files)} authenticated maintenance files.')
+          PY
+
+      - name: Remove every temporary staging file
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          rm -f .github/workflows/maintenance-source-export.yml
+          rm -f .github/workflows/apply-maintenance-release.yml
+          rm -f release-input/maintenance-41.22.3-patch.b64.part-*
+          rmdir release-input 2>/dev/null || true
+          test ! -e .github/workflows/maintenance-source-export.yml
+          test ! -e .github/workflows/apply-maintenance-release.yml
+          ! find release-input -type f -name 'maintenance-41.22.3-patch*' \
+            -print -quit 2>/dev/null | grep -q .
+
+      - name: Rebuild deterministic metadata and verify release
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export SOURCE_DATE_EPOCH=1784947200
+          python scripts/build_release.py \
+            | tee maintenance-report/build-release.txt
+          python scripts/verify_release.py \
+            | tee maintenance-report/verify-release.txt
+          python scripts/security_check.py --strict \
+            | tee maintenance-report/security-check.txt
+          python -m unittest discover -s tests -v \
+            2>&1 | tee maintenance-report/unit-tests.txt
+          test "$(sha256sum kalshi_15m_sell_bot.py | cut -d' ' -f1)" = \
+            '1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38'
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
+
+      - name: Enforce exact final diff and commit
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          expected = {
+              '.github/workflows/codeql.yml',
+              '.github/workflows/dependency-review.yml',
+              '.github/workflows/security.yml',
+              'CHANGELOG.md',
+              'LICENSE.md',
+              'MANIFEST.json',
+              'README.md',
+              'SBOM.cdx.json',
+              'SECURITY_AUDIT.md',
+              'SECURITY_FIRST.md',
+              'SHA256SUMS.txt',
+              'bot.py',
+              'public_safety.py',
+              'pyproject.toml',
+              'scripts/build_release.py',
+              'scripts/generate_sbom.py',
+              'scripts/security_check.py',
+              'tests/test_release_integrity.py',
+              'tests/test_sbom.py',
+          }
+          output = subprocess.check_output(
+              ['git', 'diff', '--name-only', 'origin/main', '--'], text=True
+          )
+          actual = {line.strip() for line in output.splitlines() if line.strip()}
+          if actual != expected:
+              raise SystemExit(
+                  f'final diff mismatch; missing={sorted(expected-actual)} '
+                  f'unexpected={sorted(actual-expected)}'
+              )
+          Path('maintenance-report/FINAL_DIFF.txt').write_text(
+              '\n'.join(sorted(actual)) + '\n', encoding='utf-8'
+          )
+          print(f'Final diff contains exactly {len(actual)} reviewed files.')
+          PY
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Release public dry-run preview 41.22.3' \
+            -m 'Bound all security workflows, pin Actions, clarify MIT source headers, and rebuild the SBOM, manifest, and SHA-256 inventory while retaining the 41.22.2 strategy engine byte-for-byte.' \
+            -m 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Record successful application
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, os, subprocess
+          report = {
+              'schema_version': 1,
+              'status': 'RELEASE_41_22_3_APPLIED',
+              'branch': os.environ['GITHUB_REF_NAME'],
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'release_version': '41.22.3',
+              'engine_sha256': '1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38',
+              'patch_sha256': '434999105fd480912453b99552f180129eeb0cf6ad06812b6b5c6d01f474e79',
+              'rights_notice': 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.',
+              'license_status': 'MIT',
+          }
+          Path('maintenance-report/APPLY_RESULT.json').write_text(
+              json.dumps(report, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
+          PY
+
+      - name: Upload bounded application evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.0
+        with:
+          name: kalshi-preview-41.22.3-application-${{ github.run_id }}
+          path: maintenance-report
+          if-no-files-found: warn
+          compression-level: 9
+          retention-days: 14
+
+# Copyright © 2026 Gateway Information Group LLC. All rights reserved.
