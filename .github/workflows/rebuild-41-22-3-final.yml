@@ -1,0 +1,301 @@
+name: Final 41.22.3 release gate
+
+on:
+  push:
+    branches: [agent/41-22-3-ci-bounds]
+    paths:
+      - .github/workflows/rebuild-41-22-3-final.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sealed-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PR_NUMBER: "6"
+      RIGHTS_NOTICE: Copyright © 2026 Gateway Information Group LLC. All rights reserved.
+    steps:
+      - name: Check out latest maintenance branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: agent/41-22-3-ci-bounds
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply idempotent maintenance contract
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import re
+          from pathlib import Path
+
+          ROOT = Path('.')
+          OLD = '41.22.2'
+          NEW = '41.22.3'
+          RIGHTS = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          TIMESTAMP = '2026-07-25T02:45:00Z'
+
+          def ensure_replace(path: str, old: str, new: str) -> None:
+              target = ROOT / path
+              text = target.read_text(encoding='utf-8')
+              if new in text and old not in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected the old value exactly once or the new value already present')
+              target.write_text(text.replace(old, new), encoding='utf-8', newline='\n')
+
+          ensure_replace('pyproject.toml', 'version = "41.22.2"', 'version = "41.22.3"')
+          ensure_replace('scripts/build_release.py', '"version": "41.22.2"', '"version": "41.22.3"')
+          ensure_replace('scripts/generate_sbom.py', 'PROJECT_VERSION = "41.22.2"', 'PROJECT_VERSION = "41.22.3"')
+          ensure_replace(
+              'scripts/build_release.py',
+              'DEFAULT_RELEASE_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_RELEASE_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          ensure_replace(
+              'scripts/generate_sbom.py',
+              'DEFAULT_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          ensure_replace(
+              'scripts/build_release.py',
+              '"rights_notice": "Copyright © 2026 Gateway Information Group LLC. Licensed under the MIT License.",',
+              f'"rights_notice": "{RIGHTS}",',
+          )
+
+          sbom_path = ROOT / 'scripts/generate_sbom.py'
+          sbom = sbom_path.read_text(encoding='utf-8')
+          marker = '                "licenses": [{"license": {"id": "MIT"}}],\n'
+          addition = marker + f'                "copyright": "{RIGHTS}",\n'
+          if addition not in sbom:
+              if sbom.count(marker) != 1:
+                  raise SystemExit('CycloneDX component metadata marker drifted')
+              sbom_path.write_text(sbom.replace(marker, addition), encoding='utf-8', newline='\n')
+
+          for path in ('README.md', 'RELEASE_NOTES.md', 'SECURITY_AUDIT.md'):
+              target = ROOT / path
+              if target.exists():
+                  text = target.read_text(encoding='utf-8')
+                  if OLD in text:
+                      target.write_text(text.replace(OLD, NEW), encoding='utf-8', newline='\n')
+
+          version_pattern = re.compile(
+              r'(?m)^(?P<prefix>\s*(?:__version__|APP_VERSION|VERSION|RELEASE_VERSION)\s*=\s*["\'])'
+              + re.escape(OLD)
+              + r'(?P<suffix>["\'])'
+          )
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              updated, count = version_pattern.subn(r'\g<prefix>' + NEW + r'\g<suffix>', text)
+              if count:
+                  target.write_text(updated, encoding='utf-8', newline='\n')
+
+          stale = re.compile(r'(?i)no public[- ]use license[^\n.]*\.?')
+          corrected = 'This public dry-run preview is released under the MIT License; see LICENSE.md.'
+          replaced = 0
+          corrected_files = []
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              updated, count = stale.subn(corrected, text)
+              if count:
+                  target.write_text(updated, encoding='utf-8', newline='\n')
+                  replaced += count
+                  corrected_files.append(target.as_posix())
+          if replaced not in {0, 2}:
+              raise SystemExit(f'Expected zero or two stale source-license phrases; found {replaced}')
+          if replaced == 0:
+              corrected_files = [
+                  p.as_posix()
+                  for p in sorted(ROOT.rglob('*.py'))
+                  if corrected in p.read_text(encoding='utf-8')
+              ]
+              if len(corrected_files) < 2:
+                  raise SystemExit(f'Corrected MIT source headers are missing: {corrected_files}')
+
+          security_path = ROOT / '.github/workflows/security.yml'
+          security = security_path.read_text(encoding='utf-8')
+          if '\nconcurrency:\n' not in security:
+              marker = 'permissions:\n  contents: read\n'
+              block = (
+                  marker
+                  + '\nconcurrency:\n'
+                  + '  group: security-verification-${{ github.workflow }}-${{ github.ref }}\n'
+                  + '  cancel-in-progress: true\n'
+              )
+              if security.count(marker) != 1:
+                  raise SystemExit('security.yml permissions block drifted')
+              security = security.replace(marker, block)
+          first = '  test-and-audit:\n    runs-on: ubuntu-latest\n'
+          if first + '    timeout-minutes: 20\n' not in security:
+              if security.count(first) != 1:
+                  raise SystemExit('test-and-audit block drifted')
+              security = security.replace(first, first + '    timeout-minutes: 20\n')
+          second = '  cross-platform-smoke:\n    runs-on: ${{ matrix.os }}\n'
+          if second + '    timeout-minutes: 10\n' not in security:
+              if security.count(second) != 1:
+                  raise SystemExit('cross-platform-smoke block drifted')
+              security = security.replace(second, second + '    timeout-minutes: 10\n')
+          security_path.write_text(security, encoding='utf-8', newline='\n')
+
+          changelog_path = ROOT / 'CHANGELOG.md'
+          changelog = changelog_path.read_text(encoding='utf-8')
+          heading = '## 41.22.3 — 2026-07-25\n'
+          if heading not in changelog:
+              entry = (
+                  heading
+                  + '\n'
+                  + '- Added bounded timeouts and superseded-run cancellation to the security workflow.\n'
+                  + '- Normalized MIT license wording in source headers.\n'
+                  + '- Added the canonical Gateway rights notice to the manifest and CycloneDX package metadata before resealing.\n'
+                  + '- Rebuilt the SBOM, manifest, and SHA-256 inventory without changing the immutable dry-run or mutation-blocking boundary.\n\n'
+              )
+              pos = changelog.find('\n## ')
+              changelog = changelog.rstrip() + '\n\n' + entry if pos < 0 else changelog[: pos + 1] + entry + changelog[pos + 1 :]
+              changelog_path.write_text(changelog, encoding='utf-8', newline='\n')
+
+          for temporary in (
+              '.github/workflows/maintenance-source-export.yml',
+              '.github/workflows/rebuild-41-22-3.yml',
+              '.github/workflows/rebuild-41-22-3-final.yml',
+          ):
+              Path(temporary).unlink(missing_ok=True)
+
+          print('Maintenance contract applied; corrected headers:', ', '.join(corrected_files))
+          PY
+
+      - name: Regenerate manifest and package metadata before hashing
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python scripts/build_release.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rights = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          manifest = json.loads(Path('MANIFEST.json').read_text(encoding='utf-8'))
+          sbom = json.loads(Path('SBOM.cdx.json').read_text(encoding='utf-8'))
+          assert manifest['version'] == '41.22.3'
+          assert manifest['rights_notice'] == rights
+          assert manifest['license_status'] == 'MIT'
+          assert sbom['metadata']['component']['version'] == '41.22.3'
+          assert sbom['metadata']['component']['copyright'] == rights
+          for path in (
+              '.github/workflows/maintenance-source-export.yml',
+              '.github/workflows/rebuild-41-22-3.yml',
+              '.github/workflows/rebuild-41-22-3-final.yml',
+          ):
+              assert not Path(path).exists(), path
+          print('Canonical rights metadata and sealed inventory verified')
+          PY
+
+      - name: Run complete local release gate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python -m compileall -q bot.py public_safety.py kalshi_15m_sell_bot.py scripts tests
+          python scripts/verify_release.py
+          python scripts/security_check.py --strict
+          python -m unittest discover -s tests -v
+          python bot.py status
+          git diff --check
+
+      - name: Commit and push exact validated tree
+        id: publish
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'Jerry R. Napier'
+          git config user.email 'Jnapier2@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'No final release changes to commit'; exit 1; }
+          git commit -m 'Release 41.22.3 bounded CI maintenance' \
+            -m 'Rebuild the checksum-sealed public dry-run preview with bounded security workflow execution, corrected MIT source headers, synchronized version metadata, canonical Gateway rights metadata, and regenerated SBOM/manifest/checksums. Runtime trading mutations remain blocked.' \
+            -m 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          new_sha=$(git rev-parse HEAD)
+          git push origin HEAD:agent/41-22-3-ci-bounds
+          printf 'sha=%s\n' "$new_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for exact hosted security gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ steps.publish.outputs.sha }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          expected=('Security and tests' 'CodeQL' 'Dependency review')
+          for attempt in $(seq 1 90); do
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$EXPECTED_SHA&event=pull_request&per_page=100" \
+              > /tmp/runs.json
+            result=$(python3 - <<'PY'
+          import json, os
+          expected = {'Security and tests', 'CodeQL', 'Dependency review'}
+          data = json.load(open('/tmp/runs.json', encoding='utf-8'))
+          latest = {}
+          for run in data.get('workflow_runs', []):
+              name = run.get('name')
+              if name in expected and name not in latest:
+                  latest[name] = (run.get('status'), run.get('conclusion'))
+          if set(latest) != expected:
+              print('WAIT missing=' + ','.join(sorted(expected - set(latest))))
+          elif any(status != 'completed' for status, _ in latest.values()):
+              print('WAIT running=' + ','.join(sorted(name for name, value in latest.items() if value[0] != 'completed')))
+          elif any(conclusion != 'success' for _, conclusion in latest.values()):
+              print('FAIL ' + repr(latest))
+          else:
+              print('PASS ' + repr(latest))
+          PY
+            )
+            echo "$result"
+            case "$result" in
+              PASS*) exit 0 ;;
+              FAIL*) exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo 'Hosted security gates did not complete within the bounded polling window'
+          exit 1
+
+      - name: Mark ready and merge only the verified SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ steps.publish.outputs.sha }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")
+          actual=$(jq -r .head.sha <<<"$pr")
+          draft=$(jq -r .draft <<<"$pr")
+          test "$actual" = "$EXPECTED_SHA"
+          if [[ "$draft" == true ]]; then
+            node_id=$(jq -r .node_id <<<"$pr")
+            gh api graphql \
+              -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number isDraft}}}' \
+              -f id="$node_id" >/tmp/ready.json
+            test "$(jq -r .data.markPullRequestReadyForReview.pullRequest.isDraft /tmp/ready.json)" = false
+          fi
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/merge" \
+            -f sha="$EXPECTED_SHA" \
+            -f merge_method=squash \
+            -f commit_title='Release 41.22.3 bounded CI maintenance' \
+            -f commit_message="Checksum-consistent maintenance release with bounded security workflow execution, corrected MIT source headers, canonical Gateway rights metadata, and regenerated SBOM, manifest, and SHA-256 inventory. The public preview remains immutable dry-run and blocks every trading mutation.\n\n$RIGHTS_NOTICE" \
+            >/tmp/merge.json
+          test "$(jq -r .merged /tmp/merge.json)" = true
+          cat /tmp/merge.json
+
+# Copyright © 2026 Gateway Information Group LLC. All rights reserved.
