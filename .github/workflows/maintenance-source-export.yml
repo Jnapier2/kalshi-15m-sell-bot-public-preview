@@ -28,13 +28,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Stage source without the temporary exporter
+      - name: Stage exact source without the temporary exporter
         shell: bash
         run: |
           set -Eeuo pipefail
           mkdir -p maintenance-export/source
           rsync -a \
             --exclude='.git/' \
+            --exclude='maintenance-export/' \
             --exclude='.github/workflows/maintenance-source-export.yml' \
             ./ maintenance-export/source/
           git rev-parse HEAD > maintenance-export/HEAD_SHA.txt
@@ -43,6 +44,13 @@ jobs:
             > maintenance-export/RIGHTS_NOTICE.txt
           find maintenance-export/source -type f -printf '%P\n' | LC_ALL=C sort \
             > maintenance-export/SOURCE_FILES.txt
+          tar \
+            --sort=name \
+            --mtime='UTC 2026-07-25' \
+            --owner=0 --group=0 --numeric-owner \
+            -czf maintenance-export/source.tar.gz \
+            -C maintenance-export/source .
+          rm -rf maintenance-export/source
 
       - name: Upload bounded maintenance source
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.0
@@ -50,7 +58,7 @@ jobs:
           name: kalshi-preview-maintenance-source-${{ github.run_id }}
           path: maintenance-export
           if-no-files-found: error
-          compression-level: 9
+          compression-level: 0
           retention-days: 3
 
 # Copyright © 2026 Gateway Information Group LLC. All rights reserved.
