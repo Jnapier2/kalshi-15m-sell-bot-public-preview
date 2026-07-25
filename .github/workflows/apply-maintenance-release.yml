@@ -59,7 +59,7 @@ jobs:
             > /tmp/maintenance-41.22.3-patch.tar.gz
           test "$(stat -c %s /tmp/maintenance-41.22.3-patch.tar.gz)" -eq 37899
           printf '%s  %s\n' \
-            '434999105fd480912453b99552f180129eeb0cf6ad06812b6b5c6d01f474e79' \
+            '985eb50a6b69bab300423063d169e493f15a5484f62216a6622d8a234706fc3b' \
             '/tmp/maintenance-41.22.3-patch.tar.gz' \
             | sha256sum --check --strict - \
             | tee maintenance-report/patch-hash-check.txt
@@ -217,7 +217,7 @@ jobs:
               'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
               'release_version': '41.22.3',
               'engine_sha256': '1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38',
-              'patch_sha256': '434999105fd480912453b99552f180129eeb0cf6ad06812b6b5c6d01f474e79',
+              'patch_sha256': '985eb50a6b69bab300423063d169e493f15a5484f62216a6622d8a234706fc3b',
               'rights_notice': 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.',
               'license_status': 'MIT',
           }
