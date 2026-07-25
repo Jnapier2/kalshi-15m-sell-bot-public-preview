@@ -18,6 +18,8 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      REPORT_DIR: ${{ runner.temp }}/kalshi-maintenance-report
     steps:
       - name: Check out exact maintenance branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -31,12 +33,12 @@ jobs:
         run: |
           set -Eeuo pipefail
           umask 077
-          mkdir -p maintenance-report
+          mkdir -p "$REPORT_DIR"
           printf '%s\n' \
             'Copyright © 2026 Gateway Information Group LLC. All rights reserved.' \
-            > maintenance-report/RIGHTS_NOTICE.txt
+            > "$REPORT_DIR/RIGHTS_NOTICE.txt"
 
-          cat > maintenance-report/expected-parts.sha256 <<'EOF'
+          cat > "$REPORT_DIR/expected-parts.sha256" <<'EOF'
           a6ba8090c4b6f6aec5d611dfd62dc865a968039bc35929b28199b6596dbb607f  release-input/maintenance-41.22.3-patch.b64.part-00
           39c2e3f1c46381f83edb1890659af1065a69d5b01c04901560df5ffce16b9cac  release-input/maintenance-41.22.3-patch.b64.part-01
           a5f4c9879e62fcdcc9ec97939f4994a2b811b82dfac739b29bb93664917c4b58  release-input/maintenance-41.22.3-patch.b64.part-02
@@ -47,8 +49,8 @@ jobs:
           ccac932bdaf7a143e57bc37f17a735d9a963f8e17e5ad2e6bebadd6fdb3e0681  release-input/maintenance-41.22.3-patch.b64.part-07
           307af4d8f2e6dde6c5f1ddcfb1cd3f1c1271a326672f09e64177d371a7f17260  release-input/maintenance-41.22.3-patch.b64.part-08
           EOF
-          sha256sum --check --strict maintenance-report/expected-parts.sha256 \
-            | tee maintenance-report/part-hash-check.txt
+          sha256sum --check --strict "$REPORT_DIR/expected-parts.sha256" \
+            | tee "$REPORT_DIR/part-hash-check.txt"
 
           mapfile -t parts < <(find release-input -maxdepth 1 -type f \
             -name 'maintenance-41.22.3-patch.b64.part-*' | LC_ALL=C sort)
@@ -62,7 +64,7 @@ jobs:
             '985eb50a6b69bab300423063d169e493f15a5484f62216a6622d8a234706fc3b' \
             '/tmp/maintenance-41.22.3-patch.tar.gz' \
             | sha256sum --check --strict - \
-            | tee maintenance-report/patch-hash-check.txt
+            | tee "$REPORT_DIR/patch-hash-check.txt"
 
       - name: Validate and apply bounded patch
         shell: bash
@@ -70,6 +72,7 @@ jobs:
           set -Eeuo pipefail
           python3 - <<'PY'
           from pathlib import Path, PurePosixPath
+          import os
           import tarfile
 
           expected = {
@@ -113,7 +116,8 @@ jobs:
                       f'unexpected={sorted(files-expected)}'
                   )
               handle.extractall(Path('.'), filter='data')
-          Path('maintenance-report/PATCH_FILES.txt').write_text(
+          report = Path(os.environ['REPORT_DIR'])
+          (report / 'PATCH_FILES.txt').write_text(
               '\n'.join(sorted(files)) + '\n', encoding='utf-8'
           )
           print(f'Applied {len(files)} authenticated maintenance files.')
@@ -138,13 +142,13 @@ jobs:
           set -Eeuo pipefail
           export SOURCE_DATE_EPOCH=1784947200
           python scripts/build_release.py \
-            | tee maintenance-report/build-release.txt
+            | tee "$REPORT_DIR/build-release.txt"
           python scripts/verify_release.py \
-            | tee maintenance-report/verify-release.txt
+            | tee "$REPORT_DIR/verify-release.txt"
           python scripts/security_check.py --strict \
-            | tee maintenance-report/security-check.txt
+            | tee "$REPORT_DIR/security-check.txt"
           python -m unittest discover -s tests -v \
-            2>&1 | tee maintenance-report/unit-tests.txt
+            2>&1 | tee "$REPORT_DIR/unit-tests.txt"
           test "$(sha256sum kalshi_15m_sell_bot.py | cut -d' ' -f1)" = \
             '1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38'
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
@@ -157,6 +161,7 @@ jobs:
           git fetch --no-tags origin main:refs/remotes/origin/main
           python3 - <<'PY'
           from pathlib import Path
+          import os
           import subprocess
 
           expected = {
@@ -189,7 +194,8 @@ jobs:
                   f'final diff mismatch; missing={sorted(expected-actual)} '
                   f'unexpected={sorted(actual-expected)}'
               )
-          Path('maintenance-report/FINAL_DIFF.txt').write_text(
+          report = Path(os.environ['REPORT_DIR'])
+          (report / 'FINAL_DIFF.txt').write_text(
               '\n'.join(sorted(actual)) + '\n', encoding='utf-8'
           )
           print(f'Final diff contains exactly {len(actual)} reviewed files.')
@@ -221,7 +227,8 @@ jobs:
               'rights_notice': 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.',
               'license_status': 'MIT',
           }
-          Path('maintenance-report/APPLY_RESULT.json').write_text(
+          output = Path(os.environ['REPORT_DIR']) / 'APPLY_RESULT.json'
+          output.write_text(
               json.dumps(report, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
           )
           PY
@@ -231,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.0
         with:
           name: kalshi-preview-41.22.3-application-${{ github.run_id }}
-          path: maintenance-report
+          path: ${{ runner.temp }}/kalshi-maintenance-report
           if-no-files-found: warn
           compression-level: 9
           retention-days: 14
