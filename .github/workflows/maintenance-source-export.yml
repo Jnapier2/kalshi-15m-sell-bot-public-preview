@@ -1,64 +1,239 @@
-name: Maintenance source export
+name: Rebuild sealed 41.22.3 maintenance release
 
 on:
   push:
     branches: [agent/41-22-3-ci-bounds]
     paths:
       - .github/workflows/maintenance-source-export.yml
-  pull_request:
-    branches: [main]
-    paths:
-      - .github/workflows/maintenance-source-export.yml
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: maintenance-source-export-${{ github.ref }}
-  cancel-in-progress: true
+  group: sealed-maintenance-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  export:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: Check out exact maintenance revision
+      - name: Check out exact maintenance branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
+          ref: agent/41-22-3-ci-bounds
+          fetch-depth: 0
+          persist-credentials: true
 
-      - name: Stage exact source without the temporary exporter
+      - name: Apply bounded maintenance changes
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p maintenance-export/source
-          rsync -a \
-            --exclude='.git/' \
-            --exclude='maintenance-export/' \
-            --exclude='.github/workflows/maintenance-source-export.yml' \
-            ./ maintenance-export/source/
-          git rev-parse HEAD > maintenance-export/HEAD_SHA.txt
-          printf '%s\n' \
-            'Copyright © 2026 Gateway Information Group LLC. All rights reserved.' \
-            > maintenance-export/RIGHTS_NOTICE.txt
-          find maintenance-export/source -type f -printf '%P\n' | LC_ALL=C sort \
-            > maintenance-export/SOURCE_FILES.txt
-          tar \
-            --sort=name \
-            --mtime='UTC 2026-07-25' \
-            --owner=0 --group=0 --numeric-owner \
-            -czf maintenance-export/source.tar.gz \
-            -C maintenance-export/source .
-          rm -rf maintenance-export/source
+          python3 - <<'PY'
+          from __future__ import annotations
 
-      - name: Upload bounded maintenance source
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.0
-        with:
-          name: kalshi-preview-maintenance-source-${{ github.run_id }}
-          path: maintenance-export
-          if-no-files-found: error
-          compression-level: 0
-          retention-days: 3
+          import re
+          from pathlib import Path
+
+          ROOT = Path('.')
+          OLD = '41.22.2'
+          NEW = '41.22.3'
+          RIGHTS = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          TIMESTAMP = '2026-07-25T02:45:00Z'
+
+          def replace_exact(path: str, old: str, new: str, expected: int | None = 1) -> None:
+              target = ROOT / path
+              text = target.read_text(encoding='utf-8')
+              count = text.count(old)
+              if expected is not None and count != expected:
+                  raise SystemExit(f'{path}: expected {expected} occurrence(s) of {old!r}, found {count}')
+              if not count:
+                  raise SystemExit(f'{path}: required value not found: {old!r}')
+              target.write_text(text.replace(old, new), encoding='utf-8', newline='\n')
+
+          # Versioned package and deterministic release metadata.
+          replace_exact('pyproject.toml', 'version = "41.22.2"', 'version = "41.22.3"')
+          replace_exact('scripts/build_release.py', '"version": "41.22.2"', '"version": "41.22.3"')
+          replace_exact('scripts/generate_sbom.py', 'PROJECT_VERSION = "41.22.2"', 'PROJECT_VERSION = "41.22.3"')
+          replace_exact(
+              'scripts/build_release.py',
+              'DEFAULT_RELEASE_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_RELEASE_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          replace_exact(
+              'scripts/generate_sbom.py',
+              'DEFAULT_TIMESTAMP = "2026-07-19T18:00:00Z"',
+              f'DEFAULT_TIMESTAMP = "{TIMESTAMP}"',
+          )
+          replace_exact(
+              'scripts/build_release.py',
+              '"rights_notice": "Copyright © 2026 Gateway Information Group LLC. Licensed under the MIT License.",',
+              f'"rights_notice": "{RIGHTS}",',
+          )
+
+          # Add the canonical notice to supported CycloneDX package metadata.
+          sbom_path = ROOT / 'scripts/generate_sbom.py'
+          sbom = sbom_path.read_text(encoding='utf-8')
+          marker = '                "licenses": [{"license": {"id": "MIT"}}],\n'
+          addition = marker + f'                "copyright": "{RIGHTS}",\n'
+          if addition not in sbom:
+              if sbom.count(marker) != 1:
+                  raise SystemExit('scripts/generate_sbom.py: metadata license marker drifted')
+              sbom = sbom.replace(marker, addition)
+          sbom_path.write_text(sbom, encoding='utf-8', newline='\n')
+
+          # Keep current-facing version references synchronized without rewriting historical changelog entries.
+          for path in ('README.md', 'RELEASE_NOTES.md', 'SECURITY_AUDIT.md'):
+              target = ROOT / path
+              if not target.exists():
+                  continue
+              text = target.read_text(encoding='utf-8')
+              if OLD in text:
+                  target.write_text(text.replace(OLD, NEW), encoding='utf-8', newline='\n')
+
+          # Align version constants used by the runtime or tests.
+          version_pattern = re.compile(
+              r'(?m)^(?P<prefix>\s*(?:__version__|APP_VERSION|VERSION|RELEASE_VERSION)\s*=\s*["\'])'
+              + re.escape(OLD)
+              + r'(?P<suffix>["\'])'
+          )
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              updated, count = version_pattern.subn(r'\g<prefix>' + NEW + r'\g<suffix>', text)
+              if count:
+                  target.write_text(updated, encoding='utf-8', newline='\n')
+
+          # Correct stale source-header language that conflicted with the repository's MIT license.
+          stale_pattern = re.compile(r'(?i)^.*no public[- ]use license.*$', re.MULTILINE)
+          stale_files = []
+          for target in sorted(ROOT.rglob('*.py')):
+              if any(part in {'.git', '.venv', 'venv', 'build', 'dist'} for part in target.parts):
+                  continue
+              text = target.read_text(encoding='utf-8')
+              if not stale_pattern.search(text):
+                  continue
+              lines = []
+              changed = False
+              for line in text.splitlines():
+                  if stale_pattern.fullmatch(line):
+                      indent = line[: len(line) - len(line.lstrip())]
+                      stripped = line.lstrip()
+                      prefix = '# ' if stripped.startswith('#') else ''
+                      lines.append(
+                          indent
+                          + prefix
+                          + 'This public dry-run preview is released under the MIT License; see LICENSE.md.'
+                      )
+                      changed = True
+                  else:
+                      lines.append(line)
+              if changed:
+                  target.write_text('\n'.join(lines) + '\n', encoding='utf-8', newline='\n')
+                  stale_files.append(target.as_posix())
+          if len(stale_files) != 2:
+              raise SystemExit(f'Expected two stale license-header files, found {stale_files}')
+
+          # Bound the two security workflow jobs and cancel superseded runs.
+          workflow_path = ROOT / '.github/workflows/security.yml'
+          workflow = workflow_path.read_text(encoding='utf-8')
+          if '\nconcurrency:\n' not in workflow:
+              permissions = 'permissions:\n  contents: read\n'
+              block = (
+                  permissions
+                  + '\nconcurrency:\n'
+                  + '  group: security-verification-${{ github.workflow }}-${{ github.ref }}\n'
+                  + '  cancel-in-progress: true\n'
+              )
+              if workflow.count(permissions) != 1:
+                  raise SystemExit('security.yml: permissions block drifted')
+              workflow = workflow.replace(permissions, block)
+          if '  test-and-audit:\n    runs-on: ubuntu-latest\n    timeout-minutes: 20\n' not in workflow:
+              old = '  test-and-audit:\n    runs-on: ubuntu-latest\n'
+              new = old + '    timeout-minutes: 20\n'
+              if workflow.count(old) != 1:
+                  raise SystemExit('security.yml: test-and-audit runner block drifted')
+              workflow = workflow.replace(old, new)
+          if '  cross-platform-smoke:\n    runs-on: ${{ matrix.os }}\n    timeout-minutes: 10\n' not in workflow:
+              old = '  cross-platform-smoke:\n    runs-on: ${{ matrix.os }}\n'
+              new = old + '    timeout-minutes: 10\n'
+              if workflow.count(old) != 1:
+                  raise SystemExit('security.yml: smoke runner block drifted')
+              workflow = workflow.replace(old, new)
+          workflow_path.write_text(workflow, encoding='utf-8', newline='\n')
+
+          # Add a concise maintenance entry while preserving prior release history.
+          changelog_path = ROOT / 'CHANGELOG.md'
+          changelog = changelog_path.read_text(encoding='utf-8')
+          heading = '## 41.22.3 — 2026-07-25\n'
+          if heading not in changelog:
+              insertion = (
+                  heading
+                  + '\n'
+                  + '- Added bounded timeouts and superseded-run cancellation to the security workflow.\n'
+                  + '- Normalized MIT license wording in source headers.\n'
+                  + '- Added the canonical Gateway rights notice to the manifest and CycloneDX package metadata before resealing.\n'
+                  + '- Rebuilt the SBOM, manifest, and SHA-256 inventory without changing the immutable dry-run or mutation-blocking boundary.\n\n'
+              )
+              first_heading = changelog.find('\n## ')
+              if first_heading < 0:
+                  changelog = changelog.rstrip() + '\n\n' + insertion
+              else:
+                  changelog = changelog[: first_heading + 1] + insertion + changelog[first_heading + 1 :]
+              changelog_path.write_text(changelog, encoding='utf-8', newline='\n')
+
+          # The temporary maintenance workflow must never enter the sealed inventory.
+          Path('.github/workflows/maintenance-source-export.yml').unlink()
+
+          print('Applied bounded 41.22.3 maintenance changes')
+          print('Corrected source headers:', ', '.join(stale_files))
+          PY
+
+      - name: Regenerate canonical release metadata before hashing
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python scripts/build_release.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rights = 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          manifest = json.loads(Path('MANIFEST.json').read_text(encoding='utf-8'))
+          sbom = json.loads(Path('SBOM.cdx.json').read_text(encoding='utf-8'))
+          assert manifest['version'] == '41.22.3'
+          assert manifest['rights_notice'] == rights
+          assert manifest['license_status'] == 'MIT'
+          assert sbom['metadata']['component']['version'] == '41.22.3'
+          assert sbom['metadata']['component']['copyright'] == rights
+          assert not Path('.github/workflows/maintenance-source-export.yml').exists()
+          print('Canonical rights and package metadata verified before final checks')
+          PY
+
+      - name: Validate resealed maintenance release
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python -m compileall -q bot.py public_safety.py kalshi_15m_sell_bot.py scripts tests
+          python scripts/verify_release.py
+          python scripts/security_check.py --strict
+          python -m unittest discover -s tests -v
+          python bot.py status
+          git diff --check
+
+      - name: Commit exact validated tree to maintenance branch
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test ! -e .github/workflows/maintenance-source-export.yml
+          git config user.name 'Jerry R. Napier'
+          git config user.email 'Jnapier2@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'No maintenance changes to commit'; exit 1; }
+          git commit -m 'Release 41.22.3 bounded CI maintenance' \
+            -m 'Rebuild the checksum-sealed public dry-run preview with bounded security workflow execution, corrected MIT source headers, synchronized version metadata, canonical Gateway rights metadata, and regenerated SBOM/manifest/checksums. Runtime trading mutations remain blocked.' \
+            -m 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
+          git push origin HEAD:agent/41-22-3-ci-bounds
 
 # Copyright © 2026 Gateway Information Group LLC. All rights reserved.
