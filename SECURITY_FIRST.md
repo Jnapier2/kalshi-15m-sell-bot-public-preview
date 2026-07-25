@@ -1,5 +1,9 @@
 # Security First: Verify Before You Trust
 
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.
+
+This ownership notice does not replace or infer a license. The first-party source is released under the MIT License; third-party components retain their own notices and licenses.
+
 Do this **before entering an API Key ID or copying a private key**. This
 MIT-licensed public preview has no order-capable mode.
 
@@ -14,13 +18,13 @@ to the repository inventory check in step 2.
 Windows PowerShell:
 
 ```powershell
-Get-FileHash .\kalshi-15m-sell-bot-public-v41.22.2.zip -Algorithm SHA256
+Get-FileHash .\kalshi-15m-sell-bot-public-v41.22.3.zip -Algorithm SHA256
 ```
 
 macOS or Linux:
 
 ```bash
-sha256sum kalshi-15m-sell-bot-public-v41.22.2.zip
+sha256sum kalshi-15m-sell-bot-public-v41.22.3.zip
 ```
 
 A mismatch means: stop, delete the copy, and obtain it again from the official repository or release channel.
