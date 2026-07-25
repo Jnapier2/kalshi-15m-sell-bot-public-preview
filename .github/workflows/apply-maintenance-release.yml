@@ -1,24 +1,28 @@
 name: Apply verified 41.22.3 maintenance release
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-maintenance-release.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: apply-41-22-3-${{ github.ref }}
+  group: apply-41-22-3-${{ github.event.pull_request.head.ref }}
   cancel-in-progress: true
 
 jobs:
   apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Check out exact maintenance branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -197,7 +201,7 @@ jobs:
           git commit -m 'Release public dry-run preview 41.22.3' \
             -m 'Bound all security workflows, pin Actions, clarify MIT source headers, and rebuild the SBOM, manifest, and SHA-256 inventory while retaining the 41.22.2 strategy engine byte-for-byte.' \
             -m 'Copyright © 2026 Gateway Information Group LLC. All rights reserved.'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
 
       - name: Record successful application
         shell: bash
@@ -209,7 +213,7 @@ jobs:
           report = {
               'schema_version': 1,
               'status': 'RELEASE_41_22_3_APPLIED',
-              'branch': os.environ['GITHUB_REF_NAME'],
+              'branch': os.environ.get('GITHUB_HEAD_REF', ''),
               'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
               'release_version': '41.22.3',
               'engine_sha256': '1771a535ee01e0ec306ff1befc2ea4bbafdd46fc34da0e60f66f79cb1c73df38',
