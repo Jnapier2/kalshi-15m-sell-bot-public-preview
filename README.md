@@ -26,7 +26,7 @@ python bot.py verify --online   # optional: contacts only Kalshi's public demo s
 
 A passing gate means the files match the sealed inventory and the documented safeguards/tests pass. It is **not** a promise that the strategy is profitable, bug-free, or suitable for your account.
 
-## Three-minute start
+## Quick start
 
 ### Windows
 
