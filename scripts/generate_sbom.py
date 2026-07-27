@@ -142,7 +142,9 @@ def generate(root: Path, output: Path | None = None) -> Path:
         "components": components,
         "dependencies": dependency_records,
     }
-    output.write_bytes((json.dumps(document, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+    output.write_bytes(
+        (json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+    )
     return output
 
 
