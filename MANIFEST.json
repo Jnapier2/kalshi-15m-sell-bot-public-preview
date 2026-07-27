@@ -86,7 +86,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "aaf0333297adc52a4a9025fe3f2fa4bd21bf78cc5eef86d1e940c8b028a4352b"
+      "sha256": "a0e1f06a03f4d52e3a1bd637b0fac0927e66393e133496b722f8ccb938a37991"
     },
     {
       "path": "RISK_DISCLOSURE.md",
@@ -170,11 +170,11 @@
     },
     {
       "path": "scripts/build_release.py",
-      "sha256": "f460d940350ecee64c3c30e08c8ed4684c8d8f255d39c1eee1dbc7188ce4a03c"
+      "sha256": "27421c9c4f039a458001810925ba8fb4b6d70ed0561370bbab424c5ae6d92a69"
     },
     {
       "path": "scripts/generate_sbom.py",
-      "sha256": "465ce31f47e916a6bcacef9e98620218dc2a25f53d4a13fb812cb400e354078e"
+      "sha256": "ec58332973006513026bfee6ce8a1b47c914283dd1f3185610c145207c319b1b"
     },
     {
       "path": "scripts/security_check.py",

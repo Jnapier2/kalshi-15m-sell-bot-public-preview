@@ -65,7 +65,7 @@ def write_metadata(root: Path) -> dict[str, str]:
         "security_profile": "experimental preview; immutable dry run; all mutations blocked before signing; exact official origins",
         "files": [{"path": path, "sha256": digest} for path, digest in records.items()],
     }
-    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     records["MANIFEST.json"] = sha256(root / "MANIFEST.json")
     write_utf8_lf(
         root / "SHA256SUMS.txt",
@@ -74,7 +74,7 @@ def write_metadata(root: Path) -> dict[str, str]:
     )
     # Rebuild MANIFEST one last time so it exactly matches checksum records, excluding itself to avoid recursion.
     manifest["files"] = [{"path": path, "sha256": digest} for path, digest in sorted(records.items()) if path != "MANIFEST.json"]
-    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    write_utf8_lf(root / "MANIFEST.json", json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     # Update MANIFEST hash in sums after final write.
     records["MANIFEST.json"] = sha256(root / "MANIFEST.json")
     write_utf8_lf(

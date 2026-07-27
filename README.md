@@ -1,14 +1,18 @@
-# Kalshi 15m Sell Bot — Experimental Advanced Dry-Run Learning Preview
+# Kalshi 15-Minute Sell Preview
 
 > **PUBLIC DRY-RUN PREVIEW — ORDER SUBMISSION DISABLED.** `PUBLIC_PREVIEW_ONLY` is fixed on. Every mutating HTTP request is rejected before signing or transmission. No environment variable, acknowledgment phrase, `--live` option, or direct engine invocation enables orders in this copy.
 
 > **Start with security, not credentials:** read [SECURITY_FIRST.md](SECURITY_FIRST.md), then run `python scripts/verify_release.py` before installing anything.
 
-An advanced dry-run learning build for inspecting sell-side planning on existing Kalshi 15-minute event-contract positions. The retained engine can read positions, orders, fills, market state, fees, and queue conditions, while the public preview keeps every account-changing action unavailable. It is a technical case study in source review, testing, threat modeling, data reconciliation, and bounded automation—not a production trading product.
+A dry-run learning build for inspecting sell-side planning on existing Kalshi 15-minute event-contract positions. The retained engine can read positions, orders, fills, market state, fees, and queue conditions, while the public preview keeps every account-changing action unavailable. It is a technical case study in source review, testing, threat modeling, data reconciliation, and bounded automation—not a production trading product.
 
 **This project is not affiliated with, endorsed by, or sponsored by Kalshi. It is not financial advice and has no verified performance record.** Event-contract trading can lose money. This preview defaults to Kalshi’s demo endpoint, dry run, and one cycle; dry run cannot be disabled.
 
 ## Verify first
+
+The current source is version `41.22.3-public-preview`. The latest downloadable
+release is `41.22.2-public-preview-rev2`; use the release page and its checksums
+when you need a sealed archive.
 
 From the extracted project folder:
 
