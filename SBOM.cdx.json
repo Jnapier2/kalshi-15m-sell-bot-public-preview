@@ -2,7 +2,7 @@
   "bomFormat": "CycloneDX",
   "components": [
     {
-      "bom-ref": "pkg:pypi/certifi@2026.6.17",
+      "bom-ref": "pkg:pypi/certifi@2026.7.22",
       "licenses": [
         {
           "expression": "MPL-2.0"
@@ -19,10 +19,10 @@
           "value": "requirements.lock.txt"
         }
       ],
-      "purl": "pkg:pypi/certifi@2026.6.17",
+      "purl": "pkg:pypi/certifi@2026.7.22",
       "scope": "required",
       "type": "library",
-      "version": "2026.6.17"
+      "version": "2026.7.22"
     },
     {
       "bom-ref": "pkg:pypi/cffi@2.1.0",
@@ -253,7 +253,7 @@
   "dependencies": [
     {
       "dependsOn": [
-        "pkg:pypi/certifi@2026.6.17",
+        "pkg:pypi/certifi@2026.7.22",
         "pkg:pypi/cryptography@48.0.1",
         "pkg:pypi/requests@2.34.2",
         "pkg:pypi/tzdata@2026.3",
@@ -263,7 +263,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:pypi/certifi@2026.6.17"
+      "ref": "pkg:pypi/certifi@2026.7.22"
     },
     {
       "dependsOn": [
@@ -292,7 +292,7 @@
     },
     {
       "dependsOn": [
-        "pkg:pypi/certifi@2026.6.17",
+        "pkg:pypi/certifi@2026.7.22",
         "pkg:pypi/charset-normalizer@3.4.9",
         "pkg:pypi/idna@3.18",
         "pkg:pypi/urllib3@2.7.0"
@@ -360,7 +360,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:2374987f-42d7-52de-90aa-e7c31f6b6c50",
+  "serialNumber": "urn:uuid:bc401d7e-786c-56f6-a243-72564dd466d5",
   "specVersion": "1.6",
   "version": 1
 }
