@@ -11,8 +11,7 @@ A dry-run learning build for inspecting sell-side planning on existing Kalshi 15
 ## Verify first
 
 The current source is version `41.22.3-public-preview`. The latest downloadable
-release is `41.22.2-public-preview-rev2`; use the release page and its checksums
-when you need a sealed archive.
+release is [`v41.22.2 (rev. 2)`](https://github.com/Jnapier2/kalshi-15m-sell-bot-public-preview/releases/tag/v41.22.2-public-preview.2); use that release page and its checksums when you need a sealed archive.
 
 From the extracted project folder:
 
@@ -62,7 +61,7 @@ Use a **Kalshi demo account and demo API key first**. Kalshi documents that demo
 | `python bot.py live` | Fails with preview-only guidance | **No** |
 | add `--continuous` | Keeps dry-run observation running | **No** |
 
-The legacy `live` command and `run --live` option remain only to return a clear block message. For an order-capable workflow, use the separately reviewed **10x1c flagship**; do not modify this preview to trade.
+The legacy `live` command and `run --live` option remain only to return a clear block message. For an order-capable workflow, use the separately reviewed [**Kalshi 10×1¢ Public Edition**](https://github.com/Jnapier2/kalshi-10x1c-public); do not modify this preview to trade.
 
 ## Preview boundary
 
@@ -74,7 +73,7 @@ Major changes include:
 - Immutable `PUBLIC_PREVIEW_ONLY=True` sentinel enforced by the launcher, engine startup, and final pre-signing mutation boundary.
 - Exact allowlists for Kalshi REST and WebSocket origins.
 - Redirects, environment proxies, and TLS bypass disabled by default.
-- Live/order-capable CLI paths fail with guidance to the separately reviewed 10x1c flagship; the former hidden acknowledgment bypass is removed.
+- Live/order-capable CLI paths fail with guidance to the separately reviewed [Kalshi 10×1¢ Public Edition](https://github.com/Jnapier2/kalshi-10x1c-public); the former hidden acknowledgment bypass is removed.
 - Fixed sell-only runtime: buy-planning/handoff modules are disabled, and non-sell order creates are rejected before signing.
 - Credentials, state, logs, and exports stored outside the repository.
 - Private keys must be regular RSA PEM files outside the project folder.
