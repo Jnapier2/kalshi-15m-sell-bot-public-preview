@@ -11,7 +11,7 @@ A dry-run learning build for inspecting sell-side planning on existing Kalshi 15
 ## Verify first
 
 The current source is version `41.22.3-public-preview`. The latest downloadable
-release is [`v41.22.2 (rev. 2)`](https://github.com/Jnapier2/kalshi-15m-sell-bot-public-preview/releases/tag/v41.22.2-public-preview.2); use that release page and its checksums when you need a sealed archive.
+release is [`v41.22.3`](https://github.com/Jnapier2/kalshi-15m-sell-bot-public-preview/releases/tag/v41.22.3-public-preview); use that release page and its checksums when you need a sealed archive.
 
 From the extracted project folder:
 
