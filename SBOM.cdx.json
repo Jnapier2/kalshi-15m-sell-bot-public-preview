@@ -25,7 +25,7 @@
       "version": "2026.7.22"
     },
     {
-      "bom-ref": "pkg:pypi/cffi@2.1.0",
+      "bom-ref": "pkg:pypi/cffi@2.1.1",
       "licenses": [
         {
           "expression": "MIT-0"
@@ -42,10 +42,10 @@
           "value": "requirements.lock.txt"
         }
       ],
-      "purl": "pkg:pypi/cffi@2.1.0",
+      "purl": "pkg:pypi/cffi@2.1.1",
       "scope": "required",
       "type": "library",
-      "version": "2.1.0"
+      "version": "2.1.1"
     },
     {
       "bom-ref": "pkg:pypi/charset-normalizer@3.4.9",
@@ -269,7 +269,7 @@
       "dependsOn": [
         "pkg:pypi/pycparser@3.0"
       ],
-      "ref": "pkg:pypi/cffi@2.1.0"
+      "ref": "pkg:pypi/cffi@2.1.1"
     },
     {
       "dependsOn": [],
@@ -277,7 +277,7 @@
     },
     {
       "dependsOn": [
-        "pkg:pypi/cffi@2.1.0",
+        "pkg:pypi/cffi@2.1.1",
         "pkg:pypi/typing-extensions@4.16.0"
       ],
       "ref": "pkg:pypi/cryptography@50.0.0"
@@ -360,7 +360,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:d96618d3-e5cc-5695-b988-88c5c070f5d6",
+  "serialNumber": "urn:uuid:b834f3b2-87de-56d8-b5d3-ef5c4a5b5bf7",
   "specVersion": "1.6",
   "version": 1
 }

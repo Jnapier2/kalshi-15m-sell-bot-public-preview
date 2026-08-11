@@ -34,7 +34,7 @@
     },
     {
       "path": ".github/workflows/codeql.yml",
-      "sha256": "a04fedc20871d07f606b9686a3f931f1b9781f8b505b4bb30624b4f521b8c93d"
+      "sha256": "20956512c2a76a264ed80b626f188234672a3aa977ecc963a3f44ff209a04098"
     },
     {
       "path": ".github/workflows/dependency-review.yml",
@@ -94,7 +94,7 @@
     },
     {
       "path": "SBOM.cdx.json",
-      "sha256": "47c8a92302f08fe7c1d7ff52148070fc60c5ec5eeae8f87fa5d7b7270917fad0"
+      "sha256": "06242c9f2f6690d21b7ad3efcaca89cc16dd50cff77f080e13d8724e4febe2ed"
     },
     {
       "path": "SECURITY.md",
@@ -150,15 +150,15 @@
     },
     {
       "path": "requirements-dev.lock.txt",
-      "sha256": "eb434623d881f0dcb4e2d4a52af37bce84188d89e75ba1f2e12752b08a7f6c1b"
+      "sha256": "faaae0b7c443ac61b78d02068186004b22d7f2962973559cdd7e348035788a98"
     },
     {
       "path": "requirements-dev.txt",
-      "sha256": "99e69204e7b19a3651615176400ce138bf85063cca8086f5eb07a0e547e829ed"
+      "sha256": "affb71c773bd4c3cb54c0fbffc36bff24783ea6f51e124066c7de49ebfd12d26"
     },
     {
       "path": "requirements.lock.txt",
-      "sha256": "194d91d6dfc30a93d9097a7dddcf936cc9169bc665557b667195ded624108db0"
+      "sha256": "f8a6ef09af77bd6ebe49edf111d8a5eba84a8b420c02ceae08cf1d014176f31b"
     },
     {
       "path": "requirements.txt",
