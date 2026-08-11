@@ -94,7 +94,7 @@
     },
     {
       "path": "SBOM.cdx.json",
-      "sha256": "9e93eb0281e02b5df94f776718772c7b4ca78761337f81c43318623fd2a2fff6"
+      "sha256": "47c8a92302f08fe7c1d7ff52148070fc60c5ec5eeae8f87fa5d7b7270917fad0"
     },
     {
       "path": "SECURITY.md",
@@ -146,11 +146,11 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "50519d9898f0f3ae85e59de508bc44f1696f336985e05b5dcefd469ef6c01b4e"
+      "sha256": "a4e6785a8f61b6e60438174cc2db74eb46c5e8ec212945f6ba719cebcc093f5f"
     },
     {
       "path": "requirements-dev.lock.txt",
-      "sha256": "b15ed42c20bf458bb11fc4c50686cf4809c38eaf827d4fc78144f0f03bb9e7d9"
+      "sha256": "eb434623d881f0dcb4e2d4a52af37bce84188d89e75ba1f2e12752b08a7f6c1b"
     },
     {
       "path": "requirements-dev.txt",
@@ -158,11 +158,11 @@
     },
     {
       "path": "requirements.lock.txt",
-      "sha256": "ad35cb020a1cf68476fb7bd1cf82c1e9acd3f636b2b9ea8579bcfc0c551a56af"
+      "sha256": "194d91d6dfc30a93d9097a7dddcf936cc9169bc665557b667195ded624108db0"
     },
     {
       "path": "requirements.txt",
-      "sha256": "788af0d9d84a9d158452a9b32d8991226f4f034ce3c7be16acb95642e8ce2a26"
+      "sha256": "600e99518c787cb45a630e3af4539453cbbbea79698d5267a316d67c95e056d8"
     },
     {
       "path": "scripts/__init__.py",
