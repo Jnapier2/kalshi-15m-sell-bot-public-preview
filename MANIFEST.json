@@ -34,7 +34,7 @@
     },
     {
       "path": ".github/workflows/codeql.yml",
-      "sha256": "20956512c2a76a264ed80b626f188234672a3aa977ecc963a3f44ff209a04098"
+      "sha256": "04dd0957e06bdb36b7a4fd873d821d92d5ee26b08b50fba19dc68360fdf024d0"
     },
     {
       "path": ".github/workflows/dependency-review.yml",
@@ -54,7 +54,7 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "0f62b807f647e686693602739102055d8fff9904d8211d7de8b558954c0a8ed7"
+      "sha256": "e416873fdf80ffb5a5e818414f12de18ca1b9e23f12fc01676040ec7acd8d2a6"
     },
     {
       "path": "CODE_OF_CONDUCT.md",
@@ -150,11 +150,11 @@
     },
     {
       "path": "requirements-dev.lock.txt",
-      "sha256": "faaae0b7c443ac61b78d02068186004b22d7f2962973559cdd7e348035788a98"
+      "sha256": "48154a2a23713d3578c50b82bcb00f7e19c7b741b33d20945cc974f31ef6f406"
     },
     {
       "path": "requirements-dev.txt",
-      "sha256": "affb71c773bd4c3cb54c0fbffc36bff24783ea6f51e124066c7de49ebfd12d26"
+      "sha256": "12d7a49b91fdc6bb585a973445b07514b0ede0d94d588dd46438d790a9f5dca2"
     },
     {
       "path": "requirements.lock.txt",
