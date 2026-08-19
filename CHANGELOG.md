@@ -1,5 +1,11 @@
 # Changelog
 
+## Maintenance refresh — 2026-08-19
+
+- Refreshed the pinned development and audit toolchain, including reproducible package hashes.
+- Updated both CodeQL workflow stages to the same reviewed action revision.
+- Regenerated the sealed manifest and checksum inventory; runtime dependencies and dry-run behavior are unchanged.
+
 ## 41.22.3-public-preview — 2026-07-25
 
 - Added bounded timeouts and superseded-run cancellation to every GitHub security workflow.
