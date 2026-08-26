@@ -48,7 +48,7 @@
       "version": "2.1.1"
     },
     {
-      "bom-ref": "pkg:pypi/charset-normalizer@3.4.9",
+      "bom-ref": "pkg:pypi/charset-normalizer@3.5.1",
       "licenses": [
         {
           "expression": "MIT"
@@ -65,10 +65,10 @@
           "value": "requirements.lock.txt"
         }
       ],
-      "purl": "pkg:pypi/charset-normalizer@3.4.9",
+      "purl": "pkg:pypi/charset-normalizer@3.5.1",
       "scope": "required",
       "type": "library",
-      "version": "3.4.9"
+      "version": "3.5.1"
     },
     {
       "bom-ref": "pkg:pypi/cryptography@50.0.0",
@@ -94,7 +94,7 @@
       "version": "50.0.0"
     },
     {
-      "bom-ref": "pkg:pypi/idna@3.18",
+      "bom-ref": "pkg:pypi/idna@3.19",
       "licenses": [
         {
           "expression": "BSD-3-Clause"
@@ -111,10 +111,10 @@
           "value": "requirements.lock.txt"
         }
       ],
-      "purl": "pkg:pypi/idna@3.18",
+      "purl": "pkg:pypi/idna@3.19",
       "scope": "required",
       "type": "library",
-      "version": "3.18"
+      "version": "3.19"
     },
     {
       "bom-ref": "pkg:pypi/pycparser@3.0",
@@ -273,7 +273,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:pypi/charset-normalizer@3.4.9"
+      "ref": "pkg:pypi/charset-normalizer@3.5.1"
     },
     {
       "dependsOn": [
@@ -284,7 +284,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:pypi/idna@3.18"
+      "ref": "pkg:pypi/idna@3.19"
     },
     {
       "dependsOn": [],
@@ -293,8 +293,8 @@
     {
       "dependsOn": [
         "pkg:pypi/certifi@2026.7.22",
-        "pkg:pypi/charset-normalizer@3.4.9",
-        "pkg:pypi/idna@3.18",
+        "pkg:pypi/charset-normalizer@3.5.1",
+        "pkg:pypi/idna@3.19",
         "pkg:pypi/urllib3@2.7.0"
       ],
       "ref": "pkg:pypi/requests@2.34.2"
@@ -360,7 +360,7 @@
       ]
     }
   },
-  "serialNumber": "urn:uuid:b834f3b2-87de-56d8-b5d3-ef5c4a5b5bf7",
+  "serialNumber": "urn:uuid:d51726c4-c92b-5ee0-8cca-6c746fbd9e66",
   "specVersion": "1.6",
   "version": 1
 }
