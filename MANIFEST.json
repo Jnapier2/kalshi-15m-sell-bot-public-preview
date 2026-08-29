@@ -42,8 +42,8 @@
     {
       "path": "Kalshi15mSellPreview.bat",
       "package_managed": true,
-      "canonical_size": 333,
-      "sha256": "05614f306bd1d85aa31c3e4779cd226298b8df06c45033705df7f270b4bc6b5e"
+      "canonical_size": 345,
+      "sha256": "163a4b707601f4eac593be86b7e30fc4b173d941413fbddc278eadf131063878"
     },
     {
       "path": "LICENSE",
@@ -132,8 +132,8 @@
     {
       "path": "run_sell_preview.py",
       "package_managed": true,
-      "canonical_size": 1037,
-      "sha256": "9b3eea29a00dd7ec3ec14080ea37c77d0bd6e19c60a4c009acc88b5123ed3266"
+      "canonical_size": 1008,
+      "sha256": "70b1a935ea033721e02170a05076157050f5b0c2be1250430cbd4501e6af8077"
     },
     {
       "path": "scripts/__init__.py",
