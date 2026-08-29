@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {'.bat', '.json', '.md', '.py', '.txt', '.yml', '.yaml'}
 TEXT_NAMES = {'LICENSE', 'TRADING_DISABLED'}
 IGNORED_DIRECTORY_NAMES = {'.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache'}
-IGNORED_FILE_SUFFIXES = {'.pyc', '.pyo'}
 
 
 def canonical_bytes(path: Path) -> bytes:
@@ -21,7 +20,7 @@ def canonical_bytes(path: Path) -> bytes:
 
 
 def _ignored_inventory_path(relative: PurePosixPath) -> bool:
-    return bool(set(relative.parts) & IGNORED_DIRECTORY_NAMES) or relative.suffix.lower() in IGNORED_FILE_SUFFIXES
+    return bool(set(relative.parts) & IGNORED_DIRECTORY_NAMES)
 
 
 def _actual_inventory(root: Path) -> tuple[set[str], list[str]]:
@@ -130,7 +129,14 @@ def verify_project(root: Path = ROOT) -> tuple[bool, list[str]]:
         if not isinstance(rel, str):
             errors.append('manifest_path_invalid')
             continue
-        pure = PurePosixPath(rel)
+        if '\x00' in rel:
+            errors.append('unsafe_path_nul')
+            continue
+        try:
+            pure = PurePosixPath(rel)
+        except (TypeError, ValueError):
+            errors.append(f'unsafe_path:{rel!r}')
+            continue
         if pure.is_absolute() or '..' in pure.parts or '\\' in rel:
             errors.append(f'unsafe_path:{rel}')
             continue
@@ -144,11 +150,11 @@ def verify_project(root: Path = ROOT) -> tuple[bool, list[str]]:
             continue
         casefolded.add(folded)
 
-        target = root.joinpath(*pure.parts)
         try:
+            target = root.joinpath(*pure.parts)
             resolved = target.resolve(strict=True)
-        except OSError:
-            errors.append(f'missing:{rel}')
+        except (OSError, ValueError):
+            errors.append(f'missing_or_unsafe_path:{rel!r}')
             continue
         if root.resolve() not in resolved.parents:
             errors.append(f'outside_root:{rel}')
@@ -158,8 +164,8 @@ def verify_project(root: Path = ROOT) -> tuple[bool, list[str]]:
             continue
         try:
             data = canonical_bytes(target)
-        except (OSError, UnicodeError) as exc:
-            errors.append(f'read_error:{rel}:{type(exc).__name__}')
+        except (OSError, UnicodeError, ValueError) as exc:
+            errors.append(f'read_error:{rel!r}:{type(exc).__name__}')
             continue
         if len(data) != entry.get('canonical_size'):
             errors.append(f'size_mismatch:{rel}')

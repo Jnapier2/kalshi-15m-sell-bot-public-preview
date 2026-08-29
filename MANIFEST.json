@@ -30,8 +30,8 @@
     {
       "path": "CHANGELOG.md",
       "package_managed": true,
-      "canonical_size": 738,
-      "sha256": "311452db559d3399f6e0a9fe38486d2e425698aa1ff20baabe78ea48bc44114f"
+      "canonical_size": 969,
+      "sha256": "6b321bf35b1d0aa249fb7beac0b94b769e8afd7f9533e0138ba434b47adbd5d7"
     },
     {
       "path": "DISCLAIMER.md",
@@ -126,14 +126,14 @@
     {
       "path": "kalshi_sell_preview/planner.py",
       "package_managed": true,
-      "canonical_size": 8206,
-      "sha256": "930649ec059eaeb015da84ba4ee733da2c56c28b3d6c3199423cf844da0428ca"
+      "canonical_size": 8683,
+      "sha256": "dae7b61d97a93b111729d2cca439470a0ff4357c0063ec93f60f54600d46b425"
     },
     {
       "path": "run_sell_preview.py",
       "package_managed": true,
-      "canonical_size": 98,
-      "sha256": "7256afd13b35b9493cf166f73bed863d0da19bc794573e45e4337c22bbf12577"
+      "canonical_size": 1037,
+      "sha256": "9b3eea29a00dd7ec3ec14080ea37c77d0bd6e19c60a4c009acc88b5123ed3266"
     },
     {
       "path": "scripts/__init__.py",
@@ -144,8 +144,8 @@
     {
       "path": "scripts/verify_release.py",
       "package_managed": true,
-      "canonical_size": 8028,
-      "sha256": "1d177db936be75222631c6ea9c2da512a832ec30e0a26e4f24dac5081ffe25da"
+      "canonical_size": 8204,
+      "sha256": "fd7213ae3aa0596d06ab8a662d390134eb75c3a0d606a8d1713f8c65b8ed8073"
     },
     {
       "path": "tests/__init__.py",
@@ -162,8 +162,8 @@
     {
       "path": "tests/test_planner.py",
       "package_managed": true,
-      "canonical_size": 4242,
-      "sha256": "ef8eb6cc74b6d895acfc4c02de6272709a4f3fdbad1f56a81fb6c7e4568e8a28"
+      "canonical_size": 4921,
+      "sha256": "9348572806a6c3acbee953683e6d2d8b8962f60e8c37885f33d5e85607335147"
     },
     {
       "path": "tests/test_public_boundary.py",
@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 1907,
-      "sha256": "a032242b3e7dbbed253894e48979db8b99569ac9c9e54a77192d4c3554f5d0c2"
+      "canonical_size": 4311,
+      "sha256": "253b89b33e7250ba3f1c922cc4872428da1641d75e720a219e2fa00d96624ae4"
     }
   ]
 }

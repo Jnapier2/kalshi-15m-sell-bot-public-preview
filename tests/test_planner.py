@@ -78,19 +78,33 @@ class SellPlannerTests(unittest.TestCase):
         self.assertEqual(result['decision'], 'PLAN')
         self.assertEqual(result['plan']['target_contracts'], '1.33')
 
-    def test_missing_observed_route_evidence_quarantines(self) -> None:
-        snapshot = base_snapshot()
-        snapshot['observed_exchange_indexes'] = []
-        result = plan_sell(snapshot)
-        self.assertEqual(result['decision'], 'QUARANTINE')
-        self.assertIn('observed_exchange_evidence_missing', result['reason_codes'])
-
     def test_extreme_position_fails_closed_without_decimal_exception(self) -> None:
         snapshot = base_snapshot()
         snapshot['position_contracts'] = '9999999999999999999999999999'
         result = plan_sell(snapshot)
         self.assertEqual(result['decision'], 'INVALID')
         self.assertIn('position_contracts_out_of_range', result['reason_codes'])
+
+    def test_extreme_exponent_position_fails_closed_without_overflow(self) -> None:
+        snapshot = base_snapshot()
+        snapshot['position_contracts'] = '1e1000000'
+        result = plan_sell(snapshot)
+        self.assertEqual(result['decision'], 'INVALID')
+        self.assertIn('position_contracts_out_of_range', result['reason_codes'])
+
+    def test_extreme_financial_evidence_fails_closed(self) -> None:
+        snapshot = base_snapshot()
+        snapshot['projected_net_cents'] = '1e1000000'
+        result = plan_sell(snapshot)
+        self.assertEqual(result['decision'], 'INVALID')
+        self.assertIn('financial_evidence_out_of_range', result['reason_codes'])
+
+    def test_missing_observed_route_evidence_quarantines(self) -> None:
+        snapshot = base_snapshot()
+        snapshot['observed_exchange_indexes'] = []
+        result = plan_sell(snapshot)
+        self.assertEqual(result['decision'], 'QUARANTINE')
+        self.assertIn('observed_exchange_evidence_missing', result['reason_codes'])
 
     def test_unknown_critical_input_fails_closed(self) -> None:
         snapshot = base_snapshot()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+from decimal import Decimal, DecimalException, InvalidOperation, ROUND_FLOOR
 import hashlib
 import json
 import re
@@ -96,18 +96,29 @@ def plan_sell(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 
     position = _decimal(snapshot.get('position_contracts'), 'position_contracts', errors)
     existing_exit = _decimal(snapshot.get('existing_exit_contracts'), 'existing_exit_contracts', errors)
+    contract_range_invalid = False
     if position < 0 or existing_exit < 0:
         errors.append('negative_contract_value')
+        contract_range_invalid = True
     if position > MAX_POSITION_CONTRACTS:
         errors.append('position_contracts_out_of_range')
+        contract_range_invalid = True
     if existing_exit > MAX_POSITION_CONTRACTS:
         errors.append('existing_exit_contracts_out_of_range')
-    eligible = max(position - existing_exit, Decimal('0'))
-    try:
-        target_contracts = (eligible * TARGET_FRACTION).quantize(Decimal('0.01'), rounding=ROUND_FLOOR)
-    except InvalidOperation:
-        errors.append('target_quantization_failed')
+        contract_range_invalid = True
+
+    if contract_range_invalid:
         target_contracts = Decimal('0')
+    else:
+        try:
+            eligible = max(position - existing_exit, Decimal('0'))
+            target_contracts = (
+                eligible * TARGET_FRACTION
+            ).quantize(Decimal('0.01'), rounding=ROUND_FLOOR)
+        except DecimalException:
+            errors.append('target_quantization_failed')
+            target_contracts = Decimal('0')
+
     if position == 0:
         holds.append('no_sell_position')
     if existing_exit > 0:
@@ -122,7 +133,14 @@ def plan_sell(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         errors,
     )
     fee_ratio = _decimal(snapshot.get('net_to_total_fees_ratio'), 'net_to_total_fees_ratio', errors)
-    if any(abs(value) > MAX_EVIDENCE_MAGNITUDE for value in (projected_net, projected_per_contract, fee_ratio)):
+    try:
+        evidence_out_of_range = any(
+            value.copy_abs() > MAX_EVIDENCE_MAGNITUDE
+            for value in (projected_net, projected_per_contract, fee_ratio)
+        )
+    except DecimalException:
+        evidence_out_of_range = True
+    if evidence_out_of_range:
         errors.append('financial_evidence_out_of_range')
     if projected_net < MIN_NET_CENTS:
         defers.append('minimum_total_net_not_met')

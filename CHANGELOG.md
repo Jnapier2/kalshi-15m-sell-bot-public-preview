@@ -9,6 +9,9 @@
   current-status build/age coherence, and duplicate exit-coverage checks.
 - Added one canonical Python entrypoint, one thin Windows BAT shim, normalized
   manifest verification, synthetic fixtures, and standard-library-only tests.
+- Hardened startup so managed-file verification completes in isolated Python
+  processes before application imports; undeclared source, sourceless bytecode,
+  malformed metadata paths, and extreme numeric evidence now fail closed.
 
 Historical releases remain in Git history for transparency but are not the active
 public preview.
