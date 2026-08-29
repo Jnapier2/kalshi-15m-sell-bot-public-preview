@@ -32,16 +32,18 @@ class ReleaseIdentityTests(unittest.TestCase):
         ok, errors = verify_project()
         self.assertTrue(ok, errors)
 
-    def test_release_identity_rejects_unlisted_shadow_file(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            candidate = _copy_project(Path(temp))
-            (candidate / 'argparse.py').write_text(
-                'raise RuntimeError("shadow_executed")\n',
-                encoding='utf-8',
-            )
-            ok, errors = verify_project(candidate)
-            self.assertFalse(ok)
-            self.assertIn('unexpected_file:argparse.py', errors)
+    def test_nonisolated_entrypoint_fails_closed_with_guidance(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(ROOT / 'run_sell_preview.py'), '--version'],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        combined = completed.stdout + completed.stderr
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn('isolated_launch_required', combined)
 
     def test_launcher_verifies_before_importing_shadowable_modules(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -51,7 +53,13 @@ class ReleaseIdentityTests(unittest.TestCase):
                 encoding='utf-8',
             )
             completed = subprocess.run(
-                [sys.executable, str(candidate / 'run_sell_preview.py'), '--version'],
+                [
+                    sys.executable,
+                    '-I',
+                    '-S',
+                    str(candidate / 'run_sell_preview.py'),
+                    '--version',
+                ],
                 cwd=candidate,
                 text=True,
                 capture_output=True,
@@ -62,6 +70,17 @@ class ReleaseIdentityTests(unittest.TestCase):
             self.assertNotEqual(completed.returncode, 0)
             self.assertIn('unexpected_file:argparse.py', combined)
             self.assertNotIn('shadow_executed', combined)
+
+    def test_release_identity_rejects_unlisted_shadow_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            candidate = _copy_project(Path(temp))
+            (candidate / 'argparse.py').write_text(
+                'raise RuntimeError("shadow_executed")\n',
+                encoding='utf-8',
+            )
+            ok, errors = verify_project(candidate)
+            self.assertFalse(ok)
+            self.assertIn('unexpected_file:argparse.py', errors)
 
     def test_release_identity_rejects_root_sourceless_bytecode(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
