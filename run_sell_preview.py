@@ -10,14 +10,6 @@ if _TRUSTED_OS is None or not hasattr(_TRUSTED_OS, 'spawnv'):
 
 ROOT = _TRUSTED_OS.path.dirname(_TRUSTED_OS.path.abspath(__file__))
 VERIFIER = _TRUSTED_OS.path.join(ROOT, 'scripts', 'verify_release.py')
-APP_BOOTSTRAP = (
-    "import sys; "
-    "root = sys.argv[1]; "
-    "args = sys.argv[2:]; "
-    "sys.path.append(root); "
-    "from kalshi_sell_preview.cli import main; "
-    "raise SystemExit(main(args))"
-)
 
 
 def _run_isolated(arguments: list[str]) -> int:
@@ -29,10 +21,17 @@ def _run_isolated(arguments: list[str]) -> int:
 
 
 def main() -> int:
+    if not sys.flags.isolated or not sys.flags.no_site:
+        return _run_isolated([__file__, *sys.argv[1:]])
+
     verify_code = _run_isolated([VERIFIER])
     if verify_code != 0:
         return verify_code
-    return _run_isolated(['-c', APP_BOOTSTRAP, ROOT, *sys.argv[1:]])
+
+    sys.path.append(ROOT)
+    from kalshi_sell_preview.cli import main as application_main
+
+    return application_main(sys.argv[1:])
 
 
 if __name__ == '__main__':
