@@ -66,8 +66,8 @@
     {
       "path": "README.md",
       "package_managed": true,
-      "canonical_size": 2786,
-      "sha256": "84504877113270b9a4b7257526a4d258d3f1a3f4924e91e35359ba26205c8fa6"
+      "canonical_size": 2955,
+      "sha256": "d09dc0e5a8a86eb7c7d0e92d380c2e38d764e489a529b0d7b7e9395da15efdd4"
     },
     {
       "path": "SBOM.cdx.json",
@@ -132,8 +132,8 @@
     {
       "path": "run_sell_preview.py",
       "package_managed": true,
-      "canonical_size": 1008,
-      "sha256": "70b1a935ea033721e02170a05076157050f5b0c2be1250430cbd4501e6af8077"
+      "canonical_size": 890,
+      "sha256": "254e97859c17d32eb1570ea6e3f20b1864ac1d1485c433a62f00f0dd83095efa"
     },
     {
       "path": "scripts/__init__.py",
@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 4358,
-      "sha256": "7b41210d5bd03fa2c7670fff26c0859a8ad22f722a99535898b96f2fef764ee4"
+      "canonical_size": 4987,
+      "sha256": "58a4a603d2775db9bca242f4bb79659d2aa878df1020863c72fb5f3e386a784d"
     }
   ]
 }
