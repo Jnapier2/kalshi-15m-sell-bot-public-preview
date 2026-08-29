@@ -7,7 +7,7 @@
   "execution_namespace": "KALSHI15M_SELL_PREVIEW_PUBLIC",
   "canonical_entrypoint": "run_sell_preview.py",
   "hash_mode": "sha256 of UTF-8 text normalized to LF; raw bytes for other files",
-  "file_count": 30,
+  "file_count": 29,
   "files": [
     {
       "path": ".gitattributes",
@@ -20,12 +20,6 @@
       "package_managed": true,
       "canonical_size": 1600,
       "sha256": "a048dc8589fb479db23a5f3667c1cdf18b70ecf84f4ddfba9ab5d9e7a568c85b"
-    },
-    {
-      "path": ".github/workflows/codeql.yml",
-      "package_managed": true,
-      "canonical_size": 583,
-      "sha256": "48d5a16e255da0c8d37ed4178a0858557da52455c8e699609c289556e3a0b49c"
     },
     {
       "path": ".gitignore",
