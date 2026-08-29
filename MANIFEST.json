@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 4311,
-      "sha256": "253b89b33e7250ba3f1c922cc4872428da1641d75e720a219e2fa00d96624ae4"
+      "canonical_size": 4358,
+      "sha256": "7b41210d5bd03fa2c7670fff26c0859a8ad22f722a99535898b96f2fef764ee4"
     }
   ]
 }
