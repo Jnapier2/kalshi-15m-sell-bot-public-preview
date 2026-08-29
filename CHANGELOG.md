@@ -1,69 +1,16 @@
 # Changelog
 
-## Maintenance refresh — 2026-08-19
+## 41.65-public.1 — 2026-08-29
 
-- Refreshed the pinned development and audit toolchain, including reproducible package hashes.
-- Updated both CodeQL workflow stages to the same reviewed action revision.
-- Regenerated the sealed manifest and checksum inventory; runtime dependencies and dry-run behavior are unchanged.
+- Replaced the older v41.22.3 active preview with an offline implementation
+  based on the v41.65 evidence-coherence lineage.
+- Removed network, authentication, credential, and account-mutation capability.
+- Added fixed 40%-at-2¢ planning, fee-gate truth, route/shard conflict quarantine,
+  current-status build/age coherence, and duplicate exit-coverage checks.
+- Added one canonical Python entrypoint, one thin Windows BAT shim, normalized
+  manifest verification, synthetic fixtures, and standard-library-only tests.
 
-## 41.22.3-public-preview — 2026-07-25
+Historical releases remain in Git history for transparency but are not the active
+public preview.
 
-- Added bounded timeouts and superseded-run cancellation to every GitHub security workflow.
-- Pinned GitHub Actions to the exact revisions validated by the maintenance pass.
-- Normalized first-party rights metadata to `Copyright © 2026 Gateway Information Group LLC. All rights reserved.` while preserving the MIT License and third-party notices separately.
-- Added the canonical rights notice and license status to CycloneDX SBOM metadata before regenerating the manifest and SHA-256 inventory.
-- Preserved the public-preview-only mutation block, strategy behavior, dependency pins, endpoint allowlists, and local-data boundaries.
-
-## 41.22.2-public-preview — 2026-07-19
-
-### Hard-blocked dry-run preview
-
-- Added the literal, non-environment-backed `PUBLIC_PREVIEW_ONLY=True` sentinel.
-- Fixed engine `DRY_RUN=True` and `FORCE_LIVE_RUN=False` instead of reading those controls from the environment.
-- Blocked every non-GET request at the final pre-signing boundary.
-- Removed the hidden acknowledgment argument and all acknowledgment-based unlocking.
-- Changed `python bot.py run --live` and `python bot.py live` to fail with guidance to the separately reviewed 10x1c flagship.
-- Added regression tests for hostile environment values, runtime flag mutation, direct engine calls, removed `--ack` parsing, and pre-signing rejection.
-- Relabeled the package as an experimental advanced dry-run preview with an immutable write barrier and no performance claims.
-
-### Retained sell-planning scope
-
-- Removed or qualified launch, production-readiness, and performance language in preview-facing copy.
-- Clarified that this copy simulates sell planning for positions already held and cannot place orders.
-- Disabled inherited buy-planning, buy-handoff, cross-bot, and entry-planning modules in the public runtime.
-- Added a central pre-signing validator for legacy and V2 order-create payloads, including contract-side/client-ID mapping for V2.
-- Added regression checks proving non-sell creates fail before signing and buy-planning modules remain disabled.
-
-## 41.22.1-public — 2026-07-18
-
-### Security posture
-
-- Changed the default API environment from production to demo.
-- Changed the default from live execution to dry run.
-- Added an exact live-order acknowledgment enforced in launcher and engine.
-- Added exact Kalshi REST and WebSocket origin allowlists.
-- Disabled HTTP redirects, environment proxy inheritance, and caller-controlled TLS bypass by default.
-- Moved credentials, config, state, logs, and exports outside the repository.
-- Removed project-local key discovery; require a regular external RSA PEM key of at least 2048 bits.
-- Added bounded regular-file-only ZIP extraction.
-- Changed crash diagnostics to summary-only by default.
-- Added exact-version, SHA-256 hash-locked dependencies and a lock-derived CycloneDX 1.6 SBOM.
-- Forced an explicit certifi CA bundle and resolved the Windows process probe through `%SystemRoot%\System32`.
-
-### Public usability
-
-- Replaced live-first batch entry points with `bot.py`, `SETUP_WINDOWS.bat`, `START_WINDOWS.bat`, and `setup.sh`.
-- Added security-first verification, quick start, risk, privacy, FAQ, threat model, architecture, and release-integrity documentation.
-- Added local safety/regression tests and GitHub security workflows.
-
-### Release hardening
-
-- Excluded operational data, maintenance utilities, transient output, transfer records, legacy shims, and the setup writer.
-- Confirmed the supplied archives contained no actual API key or private key material under the documented scan patterns.
-- Fixed inherited undefined-name defects detected during stricter static analysis.
-- Added deterministic manifest/archive metadata and SBOM-to-lock consistency tests.
-
-### Important
-
-- Strategy behavior remains complex and has not been represented as independently profitable or formally verified.
-- The source is published under the MIT License; platform terms and third-party obligations still apply.
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.

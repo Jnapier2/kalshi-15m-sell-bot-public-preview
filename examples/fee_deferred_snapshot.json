@@ -1,0 +1,22 @@
+{
+  "schema_version": "kalshi-sell-public-snapshot-v1",
+  "ticker": "SYNTHETIC-MARKET-002",
+  "market_status": "open",
+  "market_data_age_seconds": 2,
+  "status_age_seconds": 5,
+  "status_build_id": "SYNTHETIC-BUILD-1",
+  "expected_status_build_id": "SYNTHETIC-BUILD-1",
+  "sell_evidence_complete": true,
+  "fee_evidence_complete": true,
+  "position_contracts": 25,
+  "existing_exit_contracts": 0,
+  "projected_net_cents": 0.8,
+  "projected_net_per_contract_cents": 0.25,
+  "net_to_total_fees_ratio": 2.5,
+  "exchange_index": 2,
+  "observed_exchange_indexes": [
+    2
+  ],
+  "route_cache_conflict": false,
+  "notes": "Synthetic public example only."
+}
