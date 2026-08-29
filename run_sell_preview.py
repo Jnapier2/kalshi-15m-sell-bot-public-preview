@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import sys
 
-if not sys.flags.isolated or not sys.flags.no_site:
+if not sys.flags.isolated or not sys.flags.no_site or not sys.flags.dont_write_bytecode:
     print('PUBLIC_RELEASE_IDENTITY: FAIL')
     print('isolated_launch_required')
-    print('Use the canonical BAT or run: python -I -S run_sell_preview.py ...')
+    print('Use the canonical BAT or run: python -I -S -B run_sell_preview.py ...')
     raise SystemExit(2)
 
 import os
@@ -18,7 +18,7 @@ def _run_isolated(arguments: list[str]) -> int:
     return os.spawnv(
         os.P_WAIT,
         sys.executable,
-        [sys.executable, '-I', '-S', *arguments],
+        [sys.executable, '-I', '-S', '-B', *arguments],
     )
 
 

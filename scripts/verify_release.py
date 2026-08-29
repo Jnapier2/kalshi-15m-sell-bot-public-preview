@@ -8,7 +8,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {'.bat', '.json', '.md', '.py', '.txt', '.yml', '.yaml'}
 TEXT_NAMES = {'LICENSE', 'TRADING_DISABLED'}
-IGNORED_DIRECTORY_NAMES = {'.git', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache'}
+IGNORED_DIRECTORY_NAMES = {'.git', '.pytest_cache', '.mypy_cache', '.ruff_cache'}
 
 
 def canonical_bytes(path: Path) -> bytes:

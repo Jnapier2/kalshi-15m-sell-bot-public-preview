@@ -10,8 +10,10 @@
 - Added one canonical Python entrypoint, one thin Windows BAT shim, normalized
   manifest verification, synthetic fixtures, and standard-library-only tests.
 - Hardened startup so managed-file verification completes in isolated Python
-  processes before application imports; undeclared source, sourceless bytecode,
-  malformed metadata paths, and extreme numeric evidence now fail closed.
+  processes before application imports; undeclared source, root or cache
+  bytecode, malformed metadata paths, and extreme numeric evidence fail closed.
+- Disabled bytecode generation in the canonical launcher and hosted tests so the
+  clean managed inventory remains stable across repeated use.
 
 Historical releases remain in Git history for transparency but are not the active
 public preview.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import py_compile
 import shutil
@@ -57,6 +58,7 @@ class ReleaseIdentityTests(unittest.TestCase):
                     sys.executable,
                     '-I',
                     '-S',
+                    '-B',
                     str(candidate / 'run_sell_preview.py'),
                     '--version',
                 ],
@@ -99,6 +101,56 @@ class ReleaseIdentityTests(unittest.TestCase):
             ok, errors = verify_project(candidate)
             self.assertFalse(ok)
             self.assertIn('unexpected_file:argparse.pyc', errors)
+
+    def test_launcher_rejects_cache_bytecode_before_import(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            candidate = _copy_project(Path(temp))
+            managed_cli = candidate / 'kalshi_sell_preview' / 'cli.py'
+            original = managed_cli.read_bytes()
+            original_stat = managed_cli.stat()
+            payload = b'raise RuntimeError("cache_bytecode_executed")\n'
+            self.assertLess(len(payload), len(original))
+            replacement = payload + b'#' * (len(original) - len(payload) - 1) + b'\n'
+            managed_cli.write_bytes(replacement)
+            os.utime(
+                managed_cli,
+                ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns),
+            )
+            cache_dir = managed_cli.parent / '__pycache__'
+            cache_dir.mkdir()
+            cache_path = cache_dir / f'cli.{sys.implementation.cache_tag}.pyc'
+            py_compile.compile(
+                str(managed_cli),
+                cfile=str(cache_path),
+                doraise=True,
+                invalidation_mode=py_compile.PycInvalidationMode.TIMESTAMP,
+            )
+            managed_cli.write_bytes(original)
+            os.utime(
+                managed_cli,
+                ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns),
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    '-I',
+                    '-S',
+                    '-B',
+                    str(candidate / 'run_sell_preview.py'),
+                    '--version',
+                ],
+                cwd=candidate,
+                text=True,
+                capture_output=True,
+                timeout=30,
+                check=False,
+            )
+            combined = completed.stdout + completed.stderr
+            relative = cache_path.relative_to(candidate).as_posix()
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn(f'unexpected_file:{relative}', combined)
+            self.assertNotIn('cache_bytecode_executed', combined)
 
     def test_release_identity_rejects_non_object_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

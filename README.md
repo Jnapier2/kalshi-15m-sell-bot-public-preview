@@ -14,15 +14,20 @@ and coherent fee and exchange-route evidence.
 ## Quick start
 
 ```bash
-python scripts/verify_release.py
-python -I -S run_sell_preview.py examples/eligible_exit_snapshot.json
-python -m unittest discover -s tests -v
+python -B scripts/verify_release.py
+python -I -S -B run_sell_preview.py examples/eligible_exit_snapshot.json
+python -B -m unittest discover -s tests -v
 ```
 
-The public entrypoint requires Python isolated/no-site mode so a local shadow
-module cannot run before release verification. On Windows,
-`Kalshi15mSellPreview.bat examples\eligible_exit_snapshot.json` is the single
-BAT convenience launcher and applies those flags automatically.
+The public entrypoint requires Python isolated/no-site/no-bytecode mode so a
+local shadow module or cache bytecode cannot run before release verification.
+On Windows, `Kalshi15mSellPreview.bat
+examples\eligible_exit_snapshot.json` is the single BAT convenience launcher
+and applies those flags automatically.
+
+Any undeclared file—including root-level or `__pycache__` bytecode—blocks
+startup. The public runtime does not generate bytecode, so a cache file is
+treated as unexpected evidence rather than silently trusted.
 
 ## Fixed public preview contract
 

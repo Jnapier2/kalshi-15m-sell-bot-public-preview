@@ -18,8 +18,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "package_managed": true,
-      "canonical_size": 1600,
-      "sha256": "a048dc8589fb479db23a5f3667c1cdf18b70ecf84f4ddfba9ab5d9e7a568c85b"
+      "canonical_size": 1821,
+      "sha256": "4b566e957e0897f6402f7b3ffd52063915eb69c2affe773df2d06e2a629c70bc"
     },
     {
       "path": ".gitignore",
@@ -30,8 +30,8 @@
     {
       "path": "CHANGELOG.md",
       "package_managed": true,
-      "canonical_size": 969,
-      "sha256": "6b321bf35b1d0aa249fb7beac0b94b769e8afd7f9533e0138ba434b47adbd5d7"
+      "canonical_size": 1111,
+      "sha256": "e5b41759fc1b385bf7684998b11dfba3a7e756cfde76eec65c0345a3aa3e8a83"
     },
     {
       "path": "DISCLAIMER.md",
@@ -42,8 +42,8 @@
     {
       "path": "Kalshi15mSellPreview.bat",
       "package_managed": true,
-      "canonical_size": 345,
-      "sha256": "163a4b707601f4eac593be86b7e30fc4b173d941413fbddc278eadf131063878"
+      "canonical_size": 351,
+      "sha256": "d60340ff90b4ce2dc83b18e7d65817c9e7630c54c409752cc659776167aabc81"
     },
     {
       "path": "LICENSE",
@@ -66,8 +66,8 @@
     {
       "path": "README.md",
       "package_managed": true,
-      "canonical_size": 2955,
-      "sha256": "d09dc0e5a8a86eb7c7d0e92d380c2e38d764e489a529b0d7b7e9395da15efdd4"
+      "canonical_size": 3209,
+      "sha256": "f4f33ddda613e167991f6cab406fe5fdcd76cc120e24c97055e9bab123fca8d1"
     },
     {
       "path": "SBOM.cdx.json",
@@ -132,8 +132,8 @@
     {
       "path": "run_sell_preview.py",
       "package_managed": true,
-      "canonical_size": 890,
-      "sha256": "254e97859c17d32eb1570ea6e3f20b1864ac1d1485c433a62f00f0dd83095efa"
+      "canonical_size": 936,
+      "sha256": "6a5e05319ac401e2bbf8b0892b277932b19148fd2160575b1527b1b0271f8fd0"
     },
     {
       "path": "scripts/__init__.py",
@@ -144,8 +144,8 @@
     {
       "path": "scripts/verify_release.py",
       "package_managed": true,
-      "canonical_size": 8204,
-      "sha256": "fd7213ae3aa0596d06ab8a662d390134eb75c3a0d606a8d1713f8c65b8ed8073"
+      "canonical_size": 8189,
+      "sha256": "2876b802db37ead6373871e70373852d0d2d08b99d49af470faef357e248545c"
     },
     {
       "path": "tests/__init__.py",
@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 4987,
-      "sha256": "58a4a603d2775db9bca242f4bb79659d2aa878df1020863c72fb5f3e386a784d"
+      "canonical_size": 7118,
+      "sha256": "7d0f19e73dd33e75a8c9d9f1741124ecd63a849de78b53b60b342b4a00302b81"
     }
   ]
 }
