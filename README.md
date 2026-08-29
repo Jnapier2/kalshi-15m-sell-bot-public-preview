@@ -15,12 +15,14 @@ and coherent fee and exchange-route evidence.
 
 ```bash
 python scripts/verify_release.py
-python run_sell_preview.py examples/eligible_exit_snapshot.json
+python -I -S run_sell_preview.py examples/eligible_exit_snapshot.json
 python -m unittest discover -s tests -v
 ```
 
-On Windows, `Kalshi15mSellPreview.bat examples\eligible_exit_snapshot.json`
-is the single BAT convenience launcher.
+The public entrypoint requires Python isolated/no-site mode so a local shadow
+module cannot run before release verification. On Windows,
+`Kalshi15mSellPreview.bat examples\eligible_exit_snapshot.json` is the single
+BAT convenience launcher and applies those flags automatically.
 
 ## Fixed public preview contract
 
