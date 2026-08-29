@@ -126,8 +126,8 @@
     {
       "path": "kalshi_sell_preview/planner.py",
       "package_managed": true,
-      "canonical_size": 7597,
-      "sha256": "bc93564868571eea6a9a8a892a0574a1ef2d5899ce418d11c13782af6e9a22b5"
+      "canonical_size": 8206,
+      "sha256": "930649ec059eaeb015da84ba4ee733da2c56c28b3d6c3199423cf844da0428ca"
     },
     {
       "path": "run_sell_preview.py",
@@ -144,8 +144,8 @@
     {
       "path": "scripts/verify_release.py",
       "package_managed": true,
-      "canonical_size": 6589,
-      "sha256": "178b1e800a5b75fbcb9484c5778764fb408bee93e3141e27d28e8659bd908cc1"
+      "canonical_size": 8028,
+      "sha256": "1d177db936be75222631c6ea9c2da512a832ec30e0a26e4f24dac5081ffe25da"
     },
     {
       "path": "tests/__init__.py",
@@ -162,8 +162,8 @@
     {
       "path": "tests/test_planner.py",
       "package_managed": true,
-      "canonical_size": 3876,
-      "sha256": "df63160d9c2668ff050401f61d3bd4672ee9fe88c31a4221a8cc6c0fc2629e64"
+      "canonical_size": 4242,
+      "sha256": "ef8eb6cc74b6d895acfc4c02de6272709a4f3fdbad1f56a81fb6c7e4568e8a28"
     },
     {
       "path": "tests/test_public_boundary.py",
@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 290,
-      "sha256": "0e93326e85025d1341b3f553ec7a184bf8d1f7d6883dafe4c777c346a935cb5e"
+      "canonical_size": 1907,
+      "sha256": "a032242b3e7dbbed253894e48979db8b99569ac9c9e54a77192d4c3554f5d0c2"
     }
   ]
 }

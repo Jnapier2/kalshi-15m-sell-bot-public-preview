@@ -85,6 +85,13 @@ class SellPlannerTests(unittest.TestCase):
         self.assertEqual(result['decision'], 'QUARANTINE')
         self.assertIn('observed_exchange_evidence_missing', result['reason_codes'])
 
+    def test_extreme_position_fails_closed_without_decimal_exception(self) -> None:
+        snapshot = base_snapshot()
+        snapshot['position_contracts'] = '9999999999999999999999999999'
+        result = plan_sell(snapshot)
+        self.assertEqual(result['decision'], 'INVALID')
+        self.assertIn('position_contracts_out_of_range', result['reason_codes'])
+
     def test_unknown_critical_input_fails_closed(self) -> None:
         snapshot = base_snapshot()
         snapshot['live'] = True

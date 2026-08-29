@@ -14,6 +14,8 @@ MIN_NET_PER_CONTRACT_CENTS = Decimal('0.10')
 MIN_NET_TO_TOTAL_FEES_RATIO = Decimal('2.00')
 MAX_MARKET_DATA_AGE_SECONDS = Decimal('10')
 MAX_STATUS_AGE_SECONDS = Decimal('30')
+MAX_POSITION_CONTRACTS = Decimal('1000000000')
+MAX_EVIDENCE_MAGNITUDE = Decimal('1000000000000')
 TICKER_PATTERN = re.compile(r'^[A-Z0-9][A-Z0-9_.:-]{2,63}$')
 ALLOWED_FIELDS = {
     'schema_version', 'ticker', 'market_status', 'market_data_age_seconds',
@@ -96,8 +98,16 @@ def plan_sell(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     existing_exit = _decimal(snapshot.get('existing_exit_contracts'), 'existing_exit_contracts', errors)
     if position < 0 or existing_exit < 0:
         errors.append('negative_contract_value')
+    if position > MAX_POSITION_CONTRACTS:
+        errors.append('position_contracts_out_of_range')
+    if existing_exit > MAX_POSITION_CONTRACTS:
+        errors.append('existing_exit_contracts_out_of_range')
     eligible = max(position - existing_exit, Decimal('0'))
-    target_contracts = (eligible * TARGET_FRACTION).quantize(Decimal('0.01'), rounding=ROUND_FLOOR)
+    try:
+        target_contracts = (eligible * TARGET_FRACTION).quantize(Decimal('0.01'), rounding=ROUND_FLOOR)
+    except InvalidOperation:
+        errors.append('target_quantization_failed')
+        target_contracts = Decimal('0')
     if position == 0:
         holds.append('no_sell_position')
     if existing_exit > 0:
@@ -112,6 +122,8 @@ def plan_sell(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         errors,
     )
     fee_ratio = _decimal(snapshot.get('net_to_total_fees_ratio'), 'net_to_total_fees_ratio', errors)
+    if any(abs(value) > MAX_EVIDENCE_MAGNITUDE for value in (projected_net, projected_per_contract, fee_ratio)):
+        errors.append('financial_evidence_out_of_range')
     if projected_net < MIN_NET_CENTS:
         defers.append('minimum_total_net_not_met')
     if projected_per_contract < MIN_NET_PER_CONTRACT_CENTS:
