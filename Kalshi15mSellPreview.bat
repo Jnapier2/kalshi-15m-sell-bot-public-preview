@@ -3,12 +3,12 @@ setlocal
 set "ROOT=%~dp0"
 where py >nul 2>&1
 if errorlevel 1 goto use_python
-py -3 "%ROOT%run_sell_preview.py" %*
+py -3 -I -S "%ROOT%run_sell_preview.py" %*
 exit /b %errorlevel%
 :use_python
 where python >nul 2>&1
 if errorlevel 1 goto no_python
-python "%ROOT%run_sell_preview.py" %*
+python -I -S "%ROOT%run_sell_preview.py" %*
 exit /b %errorlevel%
 :no_python
 echo Python 3.11 or newer is required.
