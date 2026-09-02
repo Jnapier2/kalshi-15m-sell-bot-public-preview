@@ -46,6 +46,30 @@ class ReleaseIdentityTests(unittest.TestCase):
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn('isolated_launch_required', combined)
 
+    def test_isolated_entrypoint_handles_project_path_with_spaces(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            spaced_parent = Path(temp) / 'project path with spaces'
+            spaced_parent.mkdir()
+            candidate = _copy_project(spaced_parent)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    '-I',
+                    '-S',
+                    '-B',
+                    str(candidate / 'run_sell_preview.py'),
+                    '--version',
+                ],
+                cwd=Path(temp),
+                text=True,
+                capture_output=True,
+                timeout=30,
+                check=False,
+            )
+            combined = completed.stdout + completed.stderr
+            self.assertEqual(completed.returncode, 0, combined)
+            self.assertIn('PUBLIC_RELEASE_IDENTITY: PASS', combined)
+
     def test_launcher_verifies_before_importing_shadowable_modules(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             candidate = _copy_project(Path(temp))

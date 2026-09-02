@@ -132,8 +132,8 @@
     {
       "path": "run_sell_preview.py",
       "package_managed": true,
-      "canonical_size": 936,
-      "sha256": "6a5e05319ac401e2bbf8b0892b277932b19148fd2160575b1527b1b0271f8fd0"
+      "canonical_size": 992,
+      "sha256": "f2e4d381c95c60ecf9ee76202f20f9174c528bf7186b91d5bf5dcdf86b0e91a8"
     },
     {
       "path": "scripts/__init__.py",
@@ -180,8 +180,8 @@
     {
       "path": "tests/test_release_identity.py",
       "package_managed": true,
-      "canonical_size": 7118,
-      "sha256": "7d0f19e73dd33e75a8c9d9f1741124ecd63a849de78b53b60b342b4a00302b81"
+      "canonical_size": 8050,
+      "sha256": "0ff34b6e6fe2be8698731ce16a4732acc0a10c60435ad2def133a700e603e1ae"
     }
   ]
 }

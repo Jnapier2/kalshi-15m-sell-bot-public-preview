@@ -9,17 +9,19 @@ if not sys.flags.isolated or not sys.flags.no_site or not sys.flags.dont_write_b
     raise SystemExit(2)
 
 import os
+import subprocess
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 VERIFIER = os.path.join(ROOT, 'scripts', 'verify_release.py')
 
 
 def _run_isolated(arguments: list[str]) -> int:
-    return os.spawnv(
-        os.P_WAIT,
-        sys.executable,
+    completed = subprocess.run(
         [sys.executable, '-I', '-S', '-B', *arguments],
+        cwd=ROOT,
+        check=False,
     )
+    return completed.returncode
 
 
 def main() -> int:
