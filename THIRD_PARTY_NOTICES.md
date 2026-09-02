@@ -1,13 +1,12 @@
 # Third-Party Notices
 
-This project depends on third-party Python packages. Their own copyright, license, attribution, and data-notice terms apply; the project owner’s notice does not replace them.
+The public runtime uses only the Python standard library and has no bundled
+third-party runtime dependencies.
 
-Direct runtime dependencies:
+GitHub Actions used for repository validation retain their own licenses and
+are pinned to exact commits in `.github/workflows/ci.yml`.
 
-- Requests — Apache License 2.0; preserve its bundled NOTICE.
-- certifi — Mozilla Public License 2.0; its CA bundle includes upstream certificate notices.
-- cryptography — Apache License 2.0 **or** BSD 3-Clause, as published by the project.
-- websockets — BSD 3-Clause.
-- tzdata — Apache License 2.0 for the Python package; preserve the package’s bundled notices for the underlying time-zone data.
+Kalshi is a trademark of its respective owner. This independent project is
+not affiliated with, endorsed by, or sponsored by Kalshi.
 
-Transitive dependencies and declared license expressions are listed in `requirements.lock.txt` and `SBOM.cdx.json`. When redistributing, use the exact installed distributions or their official source records to collect complete license and NOTICE text. Regenerate the lock files, SBOM, and this notice whenever dependencies change.
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.

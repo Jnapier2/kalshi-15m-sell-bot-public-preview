@@ -1,122 +1,80 @@
 # Kalshi 15-Minute Sell Preview
 
-> **PUBLIC DRY-RUN PREVIEW — ORDER SUBMISSION DISABLED.** `PUBLIC_PREVIEW_ONLY` is fixed on. Every mutating HTTP request is rejected before signing or transmission. No environment variable, acknowledgment phrase, `--live` option, or direct engine invocation enables orders in this copy.
+**Fresh public preview based on the v41.65 evidence-coherence lineage.**
 
-> **Start with security, not credentials:** read [SECURITY_FIRST.md](SECURITY_FIRST.md), then run `python scripts/verify_release.py` before installing anything.
+This offline tool turns a sanitized position, fee, route, and status snapshot
+into a deterministic sell-side planning result. It models the fixed public
+preview contract: one durable **40% target at exactly 2¢**, subject to complete
+and coherent fee and exchange-route evidence.
 
-A dry-run learning build for inspecting sell-side planning on existing Kalshi 15-minute event-contract positions. The retained engine can read positions, orders, fills, market state, fees, and queue conditions, while the public preview keeps every account-changing action unavailable. It is a technical case study in source review, testing, threat modeling, data reconciliation, and bounded automation—not a production trading product.
-
-**This project is not affiliated with, endorsed by, or sponsored by Kalshi. It is not financial advice and has no verified performance record.** Event-contract trading can lose money. This preview defaults to Kalshi’s demo endpoint, dry run, and one cycle; dry run cannot be disabled.
-
-## Verify first
-
-The current source is version `41.22.3-public-preview`. The latest downloadable
-release is [`v41.22.3`](https://github.com/Jnapier2/kalshi-15m-sell-bot-public-preview/releases/tag/v41.22.3-public-preview); use that release page and its checksums when you need a sealed archive.
-
-From the extracted project folder:
-
-```bash
-python scripts/verify_release.py
-python scripts/security_check.py --root .
-```
-
-After dependencies are installed:
-
-```bash
-python bot.py verify
-python bot.py verify --online   # optional: contacts only Kalshi's public demo status endpoint
-```
-
-A passing gate means the files match the sealed inventory and the documented safeguards/tests pass. It is **not** a promise that the strategy is profitable, bug-free, or suitable for your account.
+> **Live writes are absent by construction.** This repository has no network
+> client, credential loader, request signer, or account mutation code. It cannot
+> connect to Kalshi, submit an order, cancel an order, or move funds.
 
 ## Quick start
 
-### Windows
-
-```text
-1. Extract the ZIP to a normal folder.
-2. Run SETUP_WINDOWS.bat.
-3. Run START_WINDOWS.bat.
-4. Choose Verify, then Configure, then Dry Run.
-```
-
-### macOS or Linux
-
 ```bash
-./setup.sh
-.venv/bin/python bot.py configure
-.venv/bin/python bot.py run
+python -B scripts/verify_release.py
+python -I -S -B run_sell_preview.py examples/eligible_exit_snapshot.json
+python -B -m unittest discover -s tests -v
 ```
 
-Use a **Kalshi demo account and demo API key first**. Kalshi documents that demo uses mock funds and separate credentials from production. See [QUICKSTART.md](QUICKSTART.md) for the complete concise flow.
+The public entrypoint requires Python isolated/no-site/no-bytecode mode so a
+local shadow module or cache bytecode cannot run before release verification.
+On Windows, `Kalshi15mSellPreview.bat
+examples\eligible_exit_snapshot.json` is the single BAT convenience launcher
+and applies those flags automatically.
 
-## Operating modes
+Any undeclared file—including root-level or `__pycache__` bytecode—blocks
+startup. The public runtime does not generate bytecode, so a cache file is
+treated as unexpected evidence rather than silently trusted.
 
-| Command | Default behavior | Can submit an order? |
-|---|---|---:|
-| `python bot.py verify` | Hashes, static safeguards, tests | No |
-| `python bot.py configure` | Copies a key to private app storage outside the repo | No |
-| `python bot.py run` | Dry run ON, configured environment, one cycle | **No — engine blocks every write** |
-| `python bot.py run --live` | Fails with preview-only guidance | **No** |
-| `python bot.py live` | Fails with preview-only guidance | **No** |
-| add `--continuous` | Keeps dry-run observation running | **No** |
+## Fixed public preview contract
 
-The legacy `live` command and `run --live` option remain only to return a clear block message. For an order-capable workflow, use the separately reviewed [**Kalshi 10×1¢ Public Edition**](https://github.com/Jnapier2/kalshi-10x1c-public); do not modify this preview to trade.
+| Property | Value |
+| --- | ---: |
+| Target fraction | `40%` of eligible contracts |
+| Economic exit price | `2¢` |
+| Minimum projected net | `1.00¢` total |
+| Minimum projected net per contract | `0.10¢` |
+| Minimum net-to-total-fees ratio | `2.00×` |
+| Network access | None |
+| Credential support | None |
+| Live write authority | None |
 
-## Preview boundary
+The planner emits `PLAN`, `DEFER`, `HOLD`, `QUARANTINE`, or `INVALID`.
+Fee evidence that does not clear the fixed thresholds produces `DEFER`, not a
+different price or target. Conflicting shard evidence or stale/mismatched
+current-status evidence produces `QUARANTINE`.
 
-The published preview focuses on the dry-run engine and its testable safety boundary. Live-first launchers, project-local key discovery, maintenance tooling, transient output, and transfer records are outside its scope.
+## Evidence reviewed
 
-Major changes include:
+- Open market and positive eligible position.
+- Bounded market-data and current-status age.
+- Current-status build identity.
+- Complete sell and fee evidence.
+- Intended shard versus observed route evidence.
+- Existing exit-order coverage to prevent duplicate planning.
+- Fixed fee-policy thresholds.
+- Deterministic plan identity.
 
-- Demo endpoint by default and a non-environment-backed `DRY_RUN=True` control.
-- Immutable `PUBLIC_PREVIEW_ONLY=True` sentinel enforced by the launcher, engine startup, and final pre-signing mutation boundary.
-- Exact allowlists for Kalshi REST and WebSocket origins.
-- Redirects, environment proxies, and TLS bypass disabled by default.
-- Live/order-capable CLI paths fail with guidance to the separately reviewed [Kalshi 10×1¢ Public Edition](https://github.com/Jnapier2/kalshi-10x1c-public); the former hidden acknowledgment bypass is removed.
-- Fixed sell-only runtime: buy-planning/handoff modules are disabled, and non-sell order creates are rejected before signing.
-- Credentials, state, logs, and exports stored outside the repository.
-- Private keys must be regular RSA PEM files outside the project folder.
-- Bounded ZIP extraction rejects traversal, links, encryption, oversize members, and high compression ratios.
-- Crash reports are summary-only unless the operator explicitly opts into sensitive diagnostics.
-- Dependencies are exact-version and SHA-256 hash locked.
-- Local tests plus GitHub workflows for Ruff, Bandit, pip-audit, secret scanning support, CodeQL, and dependency review.
+## What changed from the previous public preview
 
-Read [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for evidence and limits.
+- Updated the lineage from v41.22.3 to v41.65.
+- Removed credential configuration, public/demo network reads, and all retained
+  mutation-capable engine code from active `main`.
+- Added route-efficiency evidence, shard-conflict quarantine, current-status
+  build/age coherence, and fee-policy truth.
+- Added a lean standard-library-only source tree, normalized manifest verifier,
+  synthetic examples, and one thin Windows launcher.
+- Preserved the repository URL and history while replacing the active source.
 
-## Financial examples are not preview performance
-
-This dry-run preview has no verified live-money performance record and cannot place orders. Any price or quantity shown by the simulator is planning output—not proceeds, profit, or an expected return. See [docs/PROFIT_POTENTIAL.md](docs/PROFIT_POTENTIAL.md) for the distinction between arithmetic examples and evidence.
-
-## Engineering focus
-
-This public preview makes its control boundary inspectable: reviewers can
-evaluate source structure, tests, threat modeling, deterministic packaging,
-data reconciliation, and operational safeguards without enabling live-money
-actions.
-
-## Repository map
-
-- `bot.py` — preview launcher and hard dry-run workflow.
-- `public_safety.py` — small independently testable trust boundary.
-- `kalshi_15m_sell_bot.py` — retained experimental strategy engine with preview safety boundaries.
-- `SECURITY_FIRST.md` — how a user verifies the release before trusting it.
-- `SECURITY_AUDIT.md` — findings, changes, checks, and residual risks.
-- `docs/THREAT_MODEL.md` — assets, attackers, controls, and non-goals.
-- `tests/` — safety and regression tests.
-- `scripts/` — release verification, security gate, and deterministic builder.
-- `.github/` — CI security automation and contribution templates.
-
-## Official references
-
-- Kalshi API documentation: <https://docs.kalshi.com/welcome>
-- Kalshi demo environment: <https://docs.kalshi.com/getting_started/demo_env>
-- Kalshi API keys: <https://docs.kalshi.com/getting_started/api_keys>
-- Kalshi rate limits: <https://docs.kalshi.com/getting_started/rate_limits>
+Read [PUBLIC_STERILIZATION_REPORT.md](PUBLIC_STERILIZATION_REPORT.md),
+[SECURITY.md](SECURITY.md), and [DISCLAIMER.md](DISCLAIMER.md).
 
 ## License
 
-Copyright © 2026 Gateway Information Group LLC. All rights reserved.
+MIT. Copyright © 2026 Gateway Information Group LLC. All rights reserved.
 
-This ownership notice does not replace or infer a license. This public dry-run preview is released under the [MIT License](LICENSE.md).
-Dependency obligations remain in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+This project is independent and is not affiliated with, endorsed by, or sponsored
+by Kalshi.

@@ -1,113 +1,206 @@
-#!/usr/bin/env python3
-"""Verify the sealed release inventory and SHA-256 hashes using only stdlib."""
 from __future__ import annotations
 
-import argparse
 import hashlib
 import json
-import os
-import re
-import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from typing import Any
 
-IGNORED_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", "build", "dist"}
-IGNORED_FILES = {"SHA256SUMS.txt"}
-HEX64 = re.compile(r"^[0-9a-f]{64}$")
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+ROOT = Path(__file__).resolve().parents[1]
+TEXT_SUFFIXES = {'.bat', '.json', '.md', '.py', '.txt', '.yml', '.yaml'}
+TEXT_NAMES = {'LICENSE', 'TRADING_DISABLED'}
+IGNORED_DIRECTORY_NAMES = {'.git', '.pytest_cache', '.mypy_cache', '.ruff_cache'}
 
 
-def iter_release_files(root: Path):
-    for path in sorted(root.rglob("*")):
-        rel = path.relative_to(root)
-        if any(part in IGNORED_DIRS for part in rel.parts):
+def canonical_bytes(path: Path) -> bytes:
+    data = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES or path.name in TEXT_NAMES:
+        text = data.decode('utf-8', errors='strict')
+        return text.replace('\r\n', '\n').replace('\r', '\n').encode('utf-8')
+    return data
+
+
+def _ignored_inventory_path(relative: PurePosixPath) -> bool:
+    return bool(set(relative.parts) & IGNORED_DIRECTORY_NAMES)
+
+
+def _actual_inventory(root: Path) -> tuple[set[str], list[str]]:
+    files: set[str] = set()
+    errors: list[str] = []
+    for path in root.rglob('*'):
+        relative = PurePosixPath(path.relative_to(root).as_posix())
+        if _ignored_inventory_path(relative):
             continue
         if path.is_symlink():
-            yield rel.as_posix(), path
-        elif path.is_file() and rel.as_posix() not in IGNORED_FILES:
-            yield rel.as_posix(), path
+            errors.append(f'unexpected_symlink:{relative.as_posix()}')
+        elif path.is_file():
+            files.add(relative.as_posix())
+    return files, errors
 
 
-def load_checksums(path: Path) -> dict[str, str]:
-    if not path.is_file() or path.is_symlink():
-        raise ValueError("SHA256SUMS.txt is missing or not a regular file")
-    out: dict[str, str] = {}
-    for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        try:
-            digest, rel = line.split("  ", 1)
-        except ValueError as exc:
-            raise ValueError(f"Malformed checksum line {number}") from exc
-        if not HEX64.fullmatch(digest) or not rel or rel.startswith(("/", "../")) or "\\" in rel:
-            raise ValueError(f"Unsafe checksum record on line {number}")
-        if rel in out:
-            raise ValueError(f"Duplicate checksum record: {rel}")
-        out[rel] = digest
-    return out
+def verify_project(root: Path = ROOT) -> tuple[bool, list[str]]:
+    errors: list[str] = []
+    manifest_path = root / 'MANIFEST.json'
+    metadata_path = root / 'PACKAGE_METADATA.json'
+    version_path = root / 'VERSION.txt'
+    disabled_path = root / 'TRADING_DISABLED'
 
+    for required in (manifest_path, metadata_path, version_path, disabled_path):
+        if not required.is_file() or required.is_symlink():
+            errors.append(f'missing_or_unsafe:{required.name}')
+    if errors:
+        return False, errors
 
-def verify(root: Path) -> list[str]:
-    failures: list[str] = []
-    root = root.resolve()
-    expected = load_checksums(root / "SHA256SUMS.txt")
-    actual: dict[str, Path] = {}
-    for rel, path in iter_release_files(root):
-        actual[rel] = path
-        if path.is_symlink():
-            failures.append(f"Symlink is not permitted in the release: {rel}")
-        if path.suffix.lower() in {".pyc", ".pyo"}:
-            failures.append(f"Bytecode is not permitted in the release: {rel}")
-    missing = sorted(set(expected) - set(actual))
-    unlisted = sorted(set(actual) - set(expected))
-    failures.extend(f"Missing listed file: {rel}" for rel in missing)
-    failures.extend(f"Unlisted release file: {rel}" for rel in unlisted)
-    for rel in sorted(set(expected) & set(actual)):
-        if actual[rel].is_symlink():
-            continue
-        digest = sha256_file(actual[rel])
-        if digest != expected[rel]:
-            failures.append(f"Hash mismatch: {rel}")
-    manifest_path = root / "MANIFEST.json"
-    if manifest_path.is_file():
-        try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            records = {item["path"]: item["sha256"] for item in manifest.get("files", [])}
-            expected_without_manifest = {path: digest for path, digest in expected.items() if path != "MANIFEST.json"}
-            if records != expected_without_manifest:
-                failures.append("MANIFEST.json file inventory does not match SHA256SUMS.txt")
-        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
-            failures.append(f"MANIFEST.json is invalid: {exc}")
-    else:
-        failures.append("MANIFEST.json is missing")
-    return failures
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
-    args = parser.parse_args(argv)
     try:
-        failures = verify(args.root)
-    except (OSError, ValueError) as exc:
-        print(f"[FAIL] Release verification could not start: {exc}")
-        return 1
-    if failures:
-        for failure in failures:
-            print(f"[FAIL] {failure}")
-        print(f"Release integrity: FAIL ({len(failures)} issue(s))")
-        return 1
-    count = len(load_checksums(args.root.resolve() / "SHA256SUMS.txt"))
-    print(f"[PASS] Release integrity and inventory verified ({count} files)")
-    return 0
+        manifest_raw: Any = json.loads(manifest_path.read_text(encoding='utf-8'))
+        metadata_raw: Any = json.loads(metadata_path.read_text(encoding='utf-8'))
+        version = version_path.read_text(encoding='utf-8').strip()
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        return False, [f'metadata_parse_error:{type(exc).__name__}']
+
+    if not isinstance(manifest_raw, dict):
+        errors.append('manifest_not_object')
+    if not isinstance(metadata_raw, dict):
+        errors.append('metadata_not_object')
+    if errors:
+        return False, errors
+
+    manifest: dict[str, Any] = manifest_raw
+    metadata: dict[str, Any] = metadata_raw
+    expected_pairs = (
+        ('version', manifest.get('version'), version),
+        ('metadata_version', metadata.get('display_version'), version),
+        ('package_id', manifest.get('package_id'), metadata.get('package_id')),
+        ('project', manifest.get('project'), metadata.get('project')),
+        ('build_id', manifest.get('build_id'), metadata.get('build_id')),
+        ('execution_namespace', manifest.get('execution_namespace'), metadata.get('execution_namespace')),
+        ('canonical_entrypoint', manifest.get('canonical_entrypoint'), metadata.get('canonical_entrypoint')),
+    )
+    for label, observed, expected in expected_pairs:
+        if observed != expected:
+            errors.append(f'{label}_mismatch')
+
+    if manifest.get('schema_version') != 'gateway-public-manifest-v1.2':
+        errors.append('manifest_schema_mismatch')
+    if metadata.get('schema_version') != 'gateway-public-package-v1':
+        errors.append('metadata_schema_mismatch')
+    if metadata.get('backend_target') != metadata.get('canonical_entrypoint'):
+        errors.append('backend_target_mismatch')
+    aliases = metadata.get('approved_entrypoint_aliases')
+    if not isinstance(aliases, list) or aliases != [metadata.get('windows_convenience_shim')]:
+        errors.append('entrypoint_alias_contract_mismatch')
+    if metadata.get('network_access') is not False:
+        errors.append('network_boundary_mismatch')
+    if metadata.get('credential_support') is not False:
+        errors.append('credential_boundary_mismatch')
+    if metadata.get('live_write_capability') is not False:
+        errors.append('mutation_boundary_mismatch')
+    if metadata.get('execution_mode') != 'offline-read-only':
+        errors.append('execution_mode_mismatch')
+    output_policy = metadata.get('output_policy')
+    if not isinstance(output_policy, dict) or output_policy.get('implicit_filesystem_writes') is not False:
+        errors.append('output_policy_mismatch')
+
+    canonical_entrypoint = metadata.get('canonical_entrypoint')
+    launcher = metadata.get('windows_convenience_shim')
+    for rel in (canonical_entrypoint, launcher):
+        if not isinstance(rel, str):
+            errors.append('entrypoint_invalid')
+            continue
+        target = root / rel
+        if not target.is_file() or target.is_symlink():
+            errors.append(f'missing_or_unsafe_entrypoint:{rel}')
+
+    entries = manifest.get('files')
+    if not isinstance(entries, list):
+        return False, errors + ['manifest_files_invalid']
+    if manifest.get('file_count') != len(entries):
+        errors.append('manifest_file_count_mismatch')
+
+    seen: set[str] = set()
+    casefolded: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            errors.append('manifest_entry_invalid')
+            continue
+        if entry.get('package_managed') is not True:
+            errors.append('unmanaged_manifest_entry')
+            continue
+        rel = entry.get('path')
+        if not isinstance(rel, str):
+            errors.append('manifest_path_invalid')
+            continue
+        if '\x00' in rel:
+            errors.append('unsafe_path_nul')
+            continue
+        try:
+            pure = PurePosixPath(rel)
+        except (TypeError, ValueError):
+            errors.append(f'unsafe_path:{rel!r}')
+            continue
+        if pure.is_absolute() or '..' in pure.parts or '\\' in rel:
+            errors.append(f'unsafe_path:{rel}')
+            continue
+        if rel in seen:
+            errors.append(f'duplicate_path:{rel}')
+            continue
+        seen.add(rel)
+        folded = rel.casefold()
+        if folded in casefolded:
+            errors.append(f'case_collision:{rel}')
+            continue
+        casefolded.add(folded)
+
+        try:
+            target = root.joinpath(*pure.parts)
+            resolved = target.resolve(strict=True)
+        except (OSError, ValueError):
+            errors.append(f'missing_or_unsafe_path:{rel!r}')
+            continue
+        if root.resolve() not in resolved.parents:
+            errors.append(f'outside_root:{rel}')
+            continue
+        if target.is_symlink() or not target.is_file():
+            errors.append(f'unsafe_file:{rel}')
+            continue
+        try:
+            data = canonical_bytes(target)
+        except (OSError, UnicodeError, ValueError) as exc:
+            errors.append(f'read_error:{rel!r}:{type(exc).__name__}')
+            continue
+        if len(data) != entry.get('canonical_size'):
+            errors.append(f'size_mismatch:{rel}')
+        digest = hashlib.sha256(data).hexdigest()
+        if digest != entry.get('sha256'):
+            errors.append(f'hash_mismatch:{rel}')
+
+    required_managed = {
+        'PACKAGE_METADATA.json', 'SBOM.cdx.json', 'VERSION.txt', 'TRADING_DISABLED',
+        str(metadata.get('canonical_entrypoint')), str(metadata.get('windows_convenience_shim')),
+    }
+    missing_managed = sorted(required_managed - seen)
+    errors.extend(f'missing_managed_contract:{item}' for item in missing_managed)
+
+    actual, inventory_errors = _actual_inventory(root)
+    errors.extend(inventory_errors)
+    expected_actual = seen | {'MANIFEST.json'}
+    for rel in sorted(actual - expected_actual):
+        errors.append(f'unexpected_file:{rel}')
+    for rel in sorted(expected_actual - actual):
+        errors.append(f'inventory_missing:{rel}')
+
+    return not errors, errors
 
 
-if __name__ == "__main__":
+def main() -> int:
+    ok, errors = verify_project()
+    if ok:
+        print('PUBLIC_RELEASE_IDENTITY: PASS')
+        return 0
+    print('PUBLIC_RELEASE_IDENTITY: FAIL')
+    for error in errors:
+        print(error)
+    return 1
+
+
+if __name__ == '__main__':
     raise SystemExit(main())

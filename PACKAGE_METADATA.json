@@ -1,0 +1,35 @@
+{
+  "schema_version": "gateway-public-package-v1",
+  "project": "Kalshi 15-Minute Sell Preview",
+  "display_version": "41.65-public.1",
+  "build_id": "KALSELL-PUBLIC-41.65.1-EVIDENCE-COHERENCE",
+  "package_name": "kalshi-15m-sell-bot-public-preview",
+  "canonical_entrypoint": "run_sell_preview.py",
+  "windows_convenience_shim": "Kalshi15mSellPreview.bat",
+  "execution_mode": "offline-read-only",
+  "network_access": false,
+  "credential_support": false,
+  "live_write_capability": false,
+  "private_source_lineage": "Kalshi 15-Minute 2¢ Sell Bot v41.65",
+  "public_description": "Offline sell-side preview with 40% target planning, fee-gate evidence, route truth, and stale-status rejection.",
+  "runtime_dependencies": [],
+  "parameter_baseline": "Gateway Operating Defaults v2.17.13",
+  "rights": {
+    "license": "MIT",
+    "copyright": "Copyright © 2026 Gateway Information Group LLC. All rights reserved."
+  },
+  "package_id": "KALSHI_15M_SELL_BOT_PUBLIC_PREVIEW",
+  "execution_namespace": "KALSHI15M_SELL_PREVIEW_PUBLIC",
+  "backend_target": "run_sell_preview.py",
+  "approved_entrypoint_aliases": [
+    "Kalshi15mSellPreview.bat"
+  ],
+  "project_relative_output_roots": {},
+  "output_policy": {
+    "default_output": "stdout",
+    "implicit_filesystem_writes": false,
+    "external_output_supported": false
+  },
+  "manifest": "MANIFEST.json",
+  "sbom": "SBOM.cdx.json"
+}

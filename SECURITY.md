@@ -1,38 +1,25 @@
-# Security Policy
+# Security
 
-## Supported version
+## Public safety boundary
 
-Security fixes are accepted for the current MIT-licensed public preview. Older
-copies should be retired in favor of the latest verified release.
+This repository is an offline, read-only educational planner. It contains no
+HTTP client, WebSocket client, request signer, credential loader, private-key
+parser, or account mutation route. The runtime cannot authenticate, submit,
+cancel, amend, decrease, transfer, withdraw, or otherwise change an account.
 
-## Private reporting
+`TRADING_DISABLED` is tracked, release verification is read-only, and the
+planner rejects a modified or incomplete managed source tree before processing
+an input snapshot.
 
-Report suspected vulnerabilities privately to the repository owner using GitHub's private vulnerability-reporting feature through the repository Security tab. Include:
+## Supported input
 
-- affected version and SHA-256;
-- operating system and Python version;
-- concise reproduction steps using demo/dry-run when possible;
-- expected and observed behavior;
-- sanitized logs or screenshots;
-- whether credentials, money, or account state may have been exposed.
+Use synthetic or independently sanitized JSON snapshots. Do not place account
+identifiers, credentials, private keys, private endpoints, or production data
+in this repository.
 
-Do not include private keys, full API Key IDs, signatures, raw authentication headers, unredacted account identifiers, or live order details.
+## Reporting
 
-## Response priorities
+Report a suspected vulnerability privately through GitHub's security-reporting
+path when available. Do not include credentials or private account evidence.
 
-Credential exfiltration, unauthorized order submission, arbitrary code execution, path traversal, unsafe archive extraction, signature/authentication bypass, and secret leakage are treated as critical.
-
-## Security boundaries
-
-The preview protects four primary boundaries:
-
-1. **Network destination:** authenticated requests are restricted to exact official Kalshi demo/production origins; redirects and system proxies are disabled by default.
-2. **Immutable no-write control:** `PUBLIC_PREVIEW_ONLY=True`, fixed `DRY_RUN=True`, blocked legacy live CLI paths, and a final pre-signing mutation rejection make this copy non-order-capable.
-3. **Credential/storage isolation:** private keys, config, logs, state, and exports remain outside the repository.
-4. **Release/supply chain:** every retained file is inventoried and hashed; dependencies are exact-version and hash locked; CI runs additional analysis.
-
-See [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) for assumptions and non-goals.
-
-## Disclosure expectations
-
-Please allow the owner a reasonable opportunity to reproduce, contain, fix, and release an update before public disclosure. This request does not authorize access to another person’s account, credentials, computer, or data; destructive testing; live-market disruption; social engineering; or denial-of-service activity.
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.
