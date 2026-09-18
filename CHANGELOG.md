@@ -1,21 +1,7 @@
 # Changelog
 
-## 41.65-public.1 — 2026-08-29
+## 41.84-public.1 — 2026-09-18
 
-- Replaced the older v41.22.3 active preview with an offline implementation
-  based on the v41.65 evidence-coherence lineage.
-- Removed network, authentication, credential, and account-mutation capability.
-- Added fixed 40%-at-2¢ planning, fee-gate truth, route/shard conflict quarantine,
-  current-status build/age coherence, and duplicate exit-coverage checks.
-- Added one canonical Python entrypoint, one thin Windows BAT shim, normalized
-  manifest verification, synthetic fixtures, and standard-library-only tests.
-- Hardened startup so managed-file verification completes in isolated Python
-  processes before application imports; undeclared source, root or cache
-  bytecode, malformed metadata paths, and extreme numeric evidence fail closed.
-- Disabled bytecode generation in the canonical launcher and hosted tests so the
-  clean managed inventory remains stable across repeated use.
+Complete active-tree public replacement informed by 41.84.0. Preserved public name, repository, namespace, launcher, MIT license, and third-party notices. Added strict synthetic-only schemas, bounded input loading, scope/status/age checks, ambiguity quarantine, deterministic duplicate checks, grouped menu, independent four-file Export20, and exact-payload tests. Updated the prior 40% preview to the uploaded 60% cumulative-acquisition policy, with whole-contract rounding and preserved modeled fee floors.
 
-Historical releases remain in Git history for transparency but are not the active
-public preview.
-
-Copyright © 2026 Gateway Information Group LLC. All rights reserved.
+This replaces the public implementation; it does not publish, sanitize in place, or certify the private live engine. Historical changes remain in Git history.

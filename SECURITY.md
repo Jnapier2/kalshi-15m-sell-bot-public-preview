@@ -1,25 +1,11 @@
-# Security
+# Security and privacy
 
-## Public safety boundary
+This public edition accepts synthetic snapshots only and contains no network client, credential loader, request signer, or order authority. Do not add production exports, private configuration, keys, telemetry, or personal records.
 
-This repository is an offline, read-only educational planner. It contains no
-HTTP client, WebSocket client, request signer, credential loader, private-key
-parser, or account mutation route. The runtime cannot authenticate, submit,
-cancel, amend, decrease, transfer, withdraw, or otherwise change an account.
+Report suspected exposures privately rather than pasting secrets into a public issue. Revoking an exposed credential is a separate action; replacing current files does not remove historical commits, forks, caches, releases, or pull-request attachments. This release does not claim to audit or purge repository history.
 
-`TRADING_DISABLED` is tracked, release verification is read-only, and the
-planner rejects a modified or incomplete managed source tree before processing
-an input snapshot.
+Use the canonical isolated Python command in README.md. The manifest covers every shipped payload except itself; it detects accidental or uncoordinated changes, not an attacker rewriting both code and manifest. No signed build or antivirus clearance is claimed. Never disable operating-system, browser, or antivirus protection.
 
-## Supported input
-
-Use synthetic or independently sanitized JSON snapshots. Do not place account
-identifiers, credentials, private keys, private endpoints, or production data
-in this repository.
-
-## Reporting
-
-Report a suspected vulnerability privately through GitHub's security-reporting
-path when available. Do not include credentials or private account evidence.
+Support exports are generated from fixed safe fields only and stay under the project. Failed output operations are visible and do not prompt, use the network, rescan, repair, or recurse.
 
 Copyright © 2026 Gateway Information Group LLC. All rights reserved.

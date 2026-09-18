@@ -1,3 +1,2 @@
-"""Offline public sell-planning preview."""
-
-__version__ = "41.65-public.1"
+"""Kalshi 15-Minute Sell Preview; synthetic educational planning only."""
+__version__ = "41.84-public.1"

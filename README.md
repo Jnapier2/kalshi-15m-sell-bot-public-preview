@@ -1,80 +1,50 @@
 # Kalshi 15-Minute Sell Preview
 
-**Fresh public preview based on the v41.65 evidence-coherence lineage.**
-
-This offline tool turns a sanitized position, fee, route, and status snapshot
-into a deterministic sell-side planning result. It models the fixed public
-preview contract: one durable **40% target at exactly 2¢**, subject to complete
-and coherent fee and exchange-route evidence.
-
-> **Live writes are absent by construction.** This repository has no network
-> client, credential loader, request signer, or account mutation code. It cannot
-> connect to Kalshi, submit an order, cancel an order, or move funds.
+An offline educational exit planner demonstrating a 60% target at 2¢, fee and freshness checks, and duplicate-intent protection. It has no account access or live orders.
 
 ## Quick start
 
-```bash
-python -B scripts/verify_release.py
-python -I -S -B run_sell_preview.py examples/eligible_exit_snapshot.json
+Python 3.11 or newer; no runtime packages or account setup are required.
+
+```console
+python -I -S -B run_sell_preview.py --demo
+python -I -S -B run_sell_preview.py --verify
+python -I -S -B run_sell_preview.py --menu
+python -I -S -B run_sell_preview.py examples/conflict_snapshot.json
+python -I -S -B run_sell_preview.py --export
 python -B -m unittest discover -s tests -v
 ```
 
-The public entrypoint requires Python isolated/no-site/no-bytecode mode so a
-local shadow module or cache bytecode cannot run before release verification.
-On Windows, `Kalshi15mSellPreview.bat
-examples\eligible_exit_snapshot.json` is the single BAT convenience launcher
-and applies those flags automatically.
+On Windows, run `Kalshi15mSellPreview.bat` for the synthetic demo or pass `--menu` for grouped Start, Reports, and Setup actions. `Kalshi15mSellPreview_Export.bat` independently creates a minimal support ZIP under `outputs/support/`. Both launchers locate the project from their own directory; neither installs software or changes security settings.
 
-Any undeclared file—including root-level or `__pycache__` bytecode—blocks
-startup. The public runtime does not generate bytecode, so a cache file is
-treated as unexpected evidence rather than silently trusted.
+## What the planner demonstrates
 
-## Fixed public preview contract
+60% of cumulative verified 1¢ acquisitions at exactly 2¢, rounded down to whole contracts. Confirmed exits and reserved exits reduce the remaining target. The candidate is capped by unreserved same-scope holdings. New acquisitions may raise the target; exit fills alone do not. This deliberately simplified public model does not migrate legacy targets or model fractional contracts.
 
-| Property | Value |
-| --- | ---: |
-| Target fraction | `40%` of eligible contracts |
-| Economic exit price | `2¢` |
-| Minimum projected net | `1.00¢` total |
-| Minimum projected net per contract | `0.10¢` |
-| Minimum net-to-total-fees ratio | `2.00×` |
-| Network access | None |
-| Credential support | None |
-| Live write authority | None |
+Each snapshot must be explicitly synthetic, use `SYNTHETIC-` identifiers, and provide complete, typed inputs. The planner checks scope and route agreement, status identity, market readiness, bounded evidence age, fee completeness, and prior-intent evidence. Unknown fields, malformed values, duplicate JSON keys, oversized inputs, and non-finite numbers are rejected without echoing their contents.
 
-The planner emits `PLAN`, `DEFER`, `HOLD`, `QUARANTINE`, or `INVALID`.
-Fee evidence that does not clear the fixed thresholds produces `DEFER`, not a
-different price or target. Conflicting shard evidence or stale/mismatched
-current-status evidence produces `QUARANTINE`.
+Modeled net = candidate quantity × (2¢ − 1¢) − allocated entry fees − modeled exit fees. All fee inputs are totals in whole cents for this candidate, not per-contract fees or a current Kalshi fee schedule. Net must be at least 1¢ total, 0.10¢ per contract, and 2× total modeled fees. Otherwise the result is DEFER; price and target do not change.
 
-## Evidence reviewed
+Results are `PLAN`, `HOLD`, `QUARANTINE`, `INVALID`, or `DEFER`. `PLAN` is educational output only. Freshness means supplied ages are no more than 30 seconds; this offline tool cannot authenticate those ages or confirm real exchange state.
 
-- Open market and positive eligible position.
-- Bounded market-data and current-status age.
-- Current-status build identity.
-- Complete sell and fee evidence.
-- Intended shard versus observed route evidence.
-- Existing exit-order coverage to prevent duplicate planning.
-- Fixed fee-policy thresholds.
-- Deterministic plan identity.
+Duplicate prevention is deterministic comparison against supplied intent IDs and exposure evidence. Ambiguous prior intent requires reconciliation. It is not a durable execution ledger, a multi-process lock, or a guarantee about live orders.
 
-## What changed from the previous public preview
+## Public boundary
 
-- Updated the lineage from v41.22.3 to v41.65.
-- Removed credential configuration, public/demo network reads, and all retained
-  mutation-capable engine code from active `main`.
-- Added route-efficiency evidence, shard-conflict quarantine, current-status
-  build/age coherence, and fee-policy truth.
-- Added a lean standard-library-only source tree, normalized manifest verifier,
-  synthetic examples, and one thin Windows launcher.
-- Preserved the repository URL and history while replacing the active source.
+There is no transport, signing, credential loading, account access, order submission, cancellation, fund movement, or hidden live-mode option. Samples are invented. Do not use private account exports as inputs.
 
-Read [PUBLIC_STERILIZATION_REPORT.md](PUBLIC_STERILIZATION_REPORT.md),
-[SECURITY.md](SECURITY.md), and [DISCLAIMER.md](DISCLAIMER.md).
+Package verification checks exact managed hashes and release identity before planner imports. Python isolated/no-site/no-bytecode flags prevent project-local import shadowing on the canonical entrypoint. Checksums detect changes against the supplied manifest; they are not a publisher signature. Only `.git/` and the non-executable `outputs/` area are excluded from the payload inventory.
+
+The independent Export20 path emits four generated files without reading input snapshots, logs, source, credentials, environment variables, or account records. An integrity failure attempts one bounded local export and exits; a failed export is reported, not retried recursively.
+
+## Release and evidence
+
+Public version `41.84-public.1` is an educational reimplementation informed by source lineage `41.84.0`, not a redacted live bot or a release of that private engine. The active repository tree is replaced in full while its URL, history, MIT license, public title, execution namespace, and canonical launcher are preserved.
+
+See [VALIDATION.md](VALIDATION.md), [PUBLIC_STERILIZATION_REPORT.md](PUBLIC_STERILIZATION_REPORT.md), and [SECURITY.md](SECURITY.md). Local tests are not evidence of native Windows, antivirus clearance, live exchange correctness, or profitability. GitHub Actions results, when available, are separate evidence tied to their commit.
 
 ## License
 
-MIT. Copyright © 2026 Gateway Information Group LLC. All rights reserved.
+MIT; see [LICENSE](LICENSE). Copyright © 2026 Gateway Information Group LLC. All rights reserved.
 
-This project is independent and is not affiliated with, endorsed by, or sponsored
-by Kalshi.
+Independent project; not affiliated with, endorsed by, or sponsored by Kalshi.

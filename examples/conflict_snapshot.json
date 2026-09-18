@@ -10,7 +10,7 @@
   "market": "SYNTHETIC-MARKET-A",
   "market_open": true,
   "observed_route": "SYNTHETIC-ROUTE-A",
-  "observed_scope": "SYNTHETIC-SCOPE-A",
+  "observed_scope": "SYNTHETIC-SCOPE-B",
   "position_contracts": 10,
   "prior_intent_ambiguous": false,
   "reserved_exit_contracts": 0,

@@ -1,28 +1,20 @@
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.5",
-  "serialNumber": "urn:uuid:e49df33c-2c13-5368-8494-56a2ee8298be",
-  "version": 1,
+  "components": [],
   "metadata": {
     "component": {
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "kalshi-15m-sell-bot-public-preview",
       "type": "application",
-      "name": "Kalshi 15-Minute Sell Preview",
-      "version": "41.65-public.1"
-    },
-    "properties": [
-      {
-        "name": "gateway.runtime.dependencies",
-        "value": "none; Python standard library only"
-      },
-      {
-        "name": "gateway.network.access",
-        "value": "false"
-      },
-      {
-        "name": "gateway.live.write.capability",
-        "value": "false"
-      }
-    ]
+      "version": "41.84-public.1"
+    }
   },
-  "components": []
+  "specVersion": "1.5",
+  "version": 1
 }
