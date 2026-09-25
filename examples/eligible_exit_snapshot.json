@@ -21,7 +21,7 @@
   "seen_intent_ids": [],
   "side": "yes",
   "status_age_seconds": 1,
-  "status_build": "KALSELL-PUBLIC-41.84.1-OFFLINE-REPLACEMENT",
+  "status_build": "KALSELL-PUBLIC-41.90.1-COST-REVIEW",
   "synthetic": true,
   "verified_acquired_contracts": 10
 }

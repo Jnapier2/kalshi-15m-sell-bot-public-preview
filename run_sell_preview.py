@@ -9,11 +9,12 @@ import os
 from pathlib import Path
 import re
 import uuid
-import zipfile
+import runpy
+import stat
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "41.84-public.1"
-BUILD = "KALSELL-PUBLIC-41.84.1-OFFLINE-REPLACEMENT"
+VERSION = "41.90-public.1"
+BUILD = "KALSELL-PUBLIC-41.90.1-COST-REVIEW"
 PACKAGE_ID = "KALSHI_15M_SELL_BOT_PUBLIC_PREVIEW"
 MAX_INPUT = 65536
 
@@ -28,6 +29,11 @@ def unique_object(pairs):
 
 
 def load_json(path, limit=MAX_INPUT):
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or path.is_symlink():
+        raise ValueError("REGULAR_INPUT_REQUIRED")
+    if info.st_size > limit:
+        raise ValueError("INPUT_TOO_LARGE")
     with path.open("rb") as stream:
         raw = stream.read(limit + 1)
     if len(raw) > limit:
@@ -46,6 +52,10 @@ def verify_release():
         required = {"run_sell_preview.py", "VERSION.txt", "PACKAGE_METADATA.json", "SBOM.cdx.json", "LICENSE"}
         if not required.issubset(files) or "MANIFEST.json" in files:
             raise ValueError("MISSING_IDENTITY")
+        if len({name.casefold() for name in files}) != len(files):
+            raise ValueError("CASE_COLLISION")
+        if manifest.get("version") != VERSION or manifest.get("build_id") != BUILD or manifest.get("package_id") != PACKAGE_ID:
+            raise ValueError("MANIFEST_IDENTITY_MISMATCH")
         observed = set()
         for base, directories, names in os.walk(ROOT, followlinks=False):
             relative = Path(base).relative_to(ROOT)
@@ -53,10 +63,10 @@ def verify_release():
                 raise ValueError("UNEXPECTED_DEPTH")
             for directory in list(directories):
                 child = Path(base) / directory
+                if child.is_symlink() or (hasattr(child, "is_junction") and child.is_junction()):
+                    raise ValueError("LINK_REJECTED")
                 if relative == Path(".") and directory in {".git", "outputs"}:
                     directories.remove(directory)
-                elif child.is_symlink():
-                    raise ValueError("LINK_REJECTED")
             for name in names:
                 child = Path(base) / name
                 if child.is_symlink():
@@ -70,7 +80,12 @@ def verify_release():
             parts = name.split("/")
             if not all(re.fullmatch(r"[A-Za-z0-9_.-]+", part) and part not in {".", ".."} for part in parts):
                 raise ValueError("INVALID_MANIFEST_PATH")
+            reserved = {"CON", "PRN", "AUX", "NUL"} | {f"{prefix}{n}" for prefix in ("COM", "LPT") for n in range(1, 10)}
+            if any(part.endswith((".", " ")) or part.split(".")[0].upper() in reserved for part in parts):
+                raise ValueError("RESERVED_PATH")
             target = ROOT.joinpath(*parts)
+            if not stat.S_ISREG(target.lstat().st_mode):
+                raise ValueError("NONREGULAR_PAYLOAD")
             size = record["size"]
             if type(size) is not int or not 0 <= size <= 524288 or target.stat().st_size != size:
                 raise ValueError("SIZE_MISMATCH")
@@ -88,57 +103,51 @@ def verify_release():
         return {"status": "FAIL", "code": "PACKAGE_INTEGRITY_FAILURE"}
 
 
-def export_support(status="NOT_CHECKED"):
-    """Bounded four-file export. No source, input, logs, environment, or rescan."""
-    folder = ROOT
-    for part in ("outputs", "support"):
-        folder = folder / part
-        if folder.is_symlink():
-            raise ValueError("UNSAFE_OUTPUT")
-        folder.mkdir(exist_ok=True)
-        if not folder.is_dir():
-            raise ValueError("UNSAFE_OUTPUT")
-    receipt = {"schema": "public-export20-v1", "package_id": PACKAGE_ID,
-               "version": VERSION, "build_id": BUILD, "integrity": status,
-               "network_access": False, "input_collected": False, "file_count": 4}
-    destination = folder / ("Export20_" + uuid.uuid4().hex + ".zip")
-    try:
-        with zipfile.ZipFile(destination, "x", zipfile.ZIP_DEFLATED) as archive:
-            archive.writestr("identity.json", json.dumps(receipt, indent=2) + "\n")
-            archive.writestr("diagnostics.json", json.dumps({"integrity": status, "mode": "OFFLINE_ONLY"}) + "\n")
-            archive.writestr("PRIVACY.txt", "No credentials, source files, input snapshots, account records, paths, or environment values collected.\n")
-            archive.writestr("README.txt", "Minimal independent support export. NOT_CHECKED means no verification was requested. No scan or live action is performed.\n")
-    except Exception:
-        if destination.is_file() and not destination.is_symlink():
-            destination.unlink()
-        raise
-    return destination.relative_to(ROOT).as_posix()
+SUPPORT_SHA256 = "89019cc24003c53a93e92398c345ca9ba7f25387b2d82a612714e3e3fd1effb6"
+_SUPPORT = None
+
+
+def prepare_support():
+    global _SUPPORT
+    if _SUPPORT is None:
+        path = ROOT / "public_support.py"
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 32768:
+            raise ValueError("SUPPORT_UNAVAILABLE")
+        raw = path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != SUPPORT_SHA256:
+            raise ValueError("SUPPORT_UNTRUSTED")
+        _SUPPORT = runpy.run_path(str(path))
+    return _SUPPORT
 
 
 def report_export(status="NOT_CHECKED"):
-    try:
-        print(json.dumps({"status": "EXPORTED", "path": export_support(status)}))
-        return 0
-    except Exception:
-        print(json.dumps({"status": "ERROR", "code": "EXPORT_FAILED"}))
+    if _SUPPORT is None:
+        print(json.dumps({"status": "ERROR", "code": "SUPPORT_UNAVAILABLE"}))
         return 2
+    result = _SUPPORT["export_support"](status)
+    print(json.dumps(result, sort_keys=True))
+    return 0 if result["status"] == "EXPORTED" else (3 if result["status"] == "CAPSULE_ONLY" else 2)
 
 
 def main(args=None):
     args = list(sys.argv[1:] if args is None else args)
+    try:
+        prepare_support()
+    except Exception:
+        pass  # A failed trust check never imports the suspect exporter.
     if args == ["--export"]:
         return report_export()  # Independent of verification and planner imports.
     integrity = verify_release()
     if integrity["status"] != "PASS":
         print(json.dumps(integrity))
-        report_export("FAIL")  # One bounded local capsule; never a recursive retry.
+        report_export("FAIL")  # Cached trusted helper; atomic capsule first; no rescan.
         return 2
     if args == ["--verify"]:
         print(json.dumps(integrity))
         return 0
     if args == ["--menu"]:
         while True:
-            print("\nKalshi 15-Minute Sell Preview\nStart: [1] Synthetic demo\nReports: [2] Export20\nSetup: [3] Verify package\n[Q] Quit")
+            print("\nKalshi 15-Minute Sell Preview\nExplore\n  [1] Synthetic demo\nSupport\n  [2] Export20\n  [3] Verify package\n[Q] Quit")
             try:
                 action = input("Action: ").strip().lower()
             except (EOFError, KeyboardInterrupt):
@@ -154,7 +163,7 @@ def main(args=None):
             else:
                 print("Choose 1, 2, 3, or Q.")
     if args in ([], ["--demo"]):
-        path = ROOT / "examples" / "eligible_exit_snapshot.json"
+        path = ROOT / "examples" / "cost_backed_exit_snapshot.json"
     elif len(args) == 1 and not args[0].startswith("--"):
         path = Path(args[0])
         if not path.is_absolute():

@@ -1,7 +1,11 @@
 # Changelog
 
-## 41.84-public.1 — 2026-09-18
+## 41.90-public.1 — September 24, 2026
 
-Complete active-tree public replacement informed by 41.84.0. Preserved public name, repository, namespace, launcher, MIT license, and third-party notices. Added strict synthetic-only schemas, bounded input loading, scope/status/age checks, ambiguity quarantine, deterministic duplicate checks, grouped menu, independent four-file Export20, and exact-payload tests. Updated the prior 40% preview to the uploaded 60% cumulative-acquisition policy, with whole-contract rounding and preserved modeled fee floors.
+Added whole-packet cost-backed pricing, independent per-tick fee checks, fresh-depth versus passive-limit distinctions, and a runnable synthetic cost-review demo. Retained the fixed-price fixture as an explicitly separate teaching schema.
 
-This replaces the public implementation; it does not publish, sanitize in place, or certify the private live engine. Historical changes remain in Git history.
+The complete active public tree is prepared from a reviewed allowlist. Original private uploads and previous public ZIPs remain unchanged. New support is independently runnable with the main entrypoint, planner and metadata removed; ZIP publication is atomic, capture is bounded, and capsule-only failure is explicit. Input symlinks/non-regular files and manifest identity/path contradictions are rejected. The redundant `scripts/verify_release.py` route is retired; use the canonical main `--verify` action.
+
+Prior history is retained in Git, not reclassified as current verification. Stable public names, licenses, namespaces and Windows action names are preserved.
+
+Copyright © 2026 Gateway Information Group LLC. All rights reserved.

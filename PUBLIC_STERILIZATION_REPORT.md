@@ -1,23 +1,21 @@
-# Public replacement and sanitization
+# Public sanitization and replacement — 41.90-public.1
 
-## Scope
+## Source and scope
 
-Source lineage reviewed: `41.84.0`. All entries in the uploaded source archive were inventoried, read as text for pattern scanning, and checked for unsafe archive paths. Relevant release, policy, and execution contracts informed the synthetic implementation. This is not a claim that every private engine path was dynamically tested.
+Reviewed uploaded source lineage: `41.90.0`. Archive entries were indexed by exact path, size and SHA-256, checked for unsafe/case-colliding paths, and scanned as data for key material, token-shaped strings, contact data and local user paths. Available non-self-referential source-manifest hashes were checked. Release notes, current handoff and relevant execution/policy modules informed selected public behavior. The private engine was not executed or certified.
 
-The public tree is assembled from an explicit file allowlist, not by publishing the source archive and blanking key values. Private source, account configuration, runtime profiles, network clients, signers, order engines, live launchers, diagnostics, personal paths, account identifiers, and historic support records are excluded.
+## Publication allowlist
 
-## Retained learning behavior
+Only the independently reviewed public implementation, synthetic fixtures, tests, documentation, release metadata and existing rights notices are published. None of the original private engine, credentials, environment templates, profile/account data, histories, logs, diagnostics, endpoints or vendor signing material is copied. Existing MIT licensing applies to this educational edition, not to the private engine.
 
-60% of cumulative verified 1¢ acquisitions at exactly 2¢, rounded down to whole contracts. Confirmed exits and reserved exits reduce the remaining target. The candidate is capped by unreserved same-scope holdings. New acquisitions may raise the target; exit fills alone do not. This deliberately simplified public model does not migrate legacy targets or model fractional contracts.
+## Model boundary
 
-Scope contradictions, stale or incomplete evidence, ambiguous intent, and duplicate-intent evidence are handled visibly. All examples use invented identifiers. Whole-cent fees are explicit educational assumptions.
+The public model is an educational reimplementation, not a redacted live bot or a complete feature port. README.md states its units, assumptions, fixed public profile and deviations from the private source. Every demonstration is synthetic; no sample proves a trade, fee quote, fill or financial result.
 
-## Replacement boundaries
+## Checks and residual scope
 
-The current source tree is replaced as a single normal descendant commit. Prior Git history is retained for rollback; older branches, tags, releases, pull requests, forks, caches, and account secrets are not rewritten, deleted, or certified by this pass. Original private uploads are not published. Existing MIT and third-party notices are retained.
+The published file set is checked for secret/PII patterns, unexpected executable/network imports, non-UTF-8 binary payloads, links, case collisions, private-path records and stale active release identity. Pattern scanning is heuristic; manual boundary review and no-private-source construction are separate protections. Exact Git-tree and archive readback belong to the publication receipt.
 
-## Verification
-
-The manifest covers the complete active payload. Tests exercise synthetic decision paths, strict input rejection, no-network boundaries, exports, and package tampering. No private build, live-provider behavior, profitability, Windows host, or antivirus status is certified. See VALIDATION.md for measured local results.
+This replacement does not purge or certify historical commits, branches, tags, releases, forks, pull requests or caches. No account secret is rotated, no live service is contacted, and no antivirus clearance or publisher signature is claimed.
 
 Copyright © 2026 Gateway Information Group LLC. All rights reserved.

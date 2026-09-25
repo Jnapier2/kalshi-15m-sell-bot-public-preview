@@ -1,9 +1,9 @@
 {
   "backend_target": "run_sell_preview.py",
-  "build_id": "KALSELL-PUBLIC-41.84.1-OFFLINE-REPLACEMENT",
+  "build_id": "KALSELL-PUBLIC-41.90.1-COST-REVIEW",
   "canonical_entrypoint": "run_sell_preview.py",
   "credential_support": false,
-  "display_version": "41.84-public.1",
+  "display_version": "41.90-public.1",
   "execution_mode": "offline-synthetic-planning",
   "execution_namespace": "KALSHI15M_SELL_PREVIEW_PUBLIC",
   "independent_export_shim": "Kalshi15mSellPreview_Export.bat",
@@ -11,19 +11,20 @@
   "manifest": "MANIFEST.json",
   "network_access": false,
   "output_policy": {
-    "critical_integrity_failure_export": true,
     "default_output": "stdout",
-    "explicit_export_only": true,
-    "external_output_supported": false
+    "explicit_export_supported": true,
+    "critical_integrity_failure_export": true,
+    "external_output_supported": false,
+    "application_health_in_standalone_export": "NOT_CHECKED"
   },
   "package_id": "KALSHI_15M_SELL_BOT_PUBLIC_PREVIEW",
   "package_name": "kalshi-15m-sell-bot-public-preview",
-  "private_source_lineage": "41.84.0",
+  "private_source_lineage": "41.90.0",
   "project": "Kalshi 15-Minute Sell Preview",
   "project_relative_output_roots": {
     "support": "outputs/support"
   },
-  "public_description": "An offline educational exit planner demonstrating a 60% target at 2¢, fee and freshness checks, and duplicate-intent protection. It has no account access or live orders.",
+  "public_description": "An offline educational exit planner demonstrating cost-backed price selection, fee and freshness checks, and duplicate-intent protection. It has no account access or live orders.",
   "rights": {
     "copyright": "Copyright © 2026 Gateway Information Group LLC. All rights reserved.",
     "license": "MIT"
@@ -31,5 +32,27 @@
   "runtime_dependencies": [],
   "sbom": "SBOM.cdx.json",
   "schema_version": "gateway-public-package-v2",
-  "windows_convenience_shim": "Kalshi15mSellPreview.bat"
+  "windows_convenience_shim": "Kalshi15mSellPreview.bat",
+  "support_entrypoint": "public_support.py",
+  "actions": [
+    {
+      "id": "demo",
+      "argument": "--demo",
+      "group": "Explore",
+      "side_effects": "stdout only"
+    },
+    {
+      "id": "verify",
+      "argument": "--verify",
+      "group": "Support",
+      "side_effects": "minimal local diagnostics on critical failure"
+    },
+    {
+      "id": "export",
+      "argument": "--export",
+      "group": "Support",
+      "backend": "public_support.py",
+      "side_effects": "bounded outputs/support files"
+    }
+  ]
 }

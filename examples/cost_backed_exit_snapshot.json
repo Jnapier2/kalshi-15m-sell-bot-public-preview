@@ -1,0 +1,58 @@
+{
+  "age_seconds": 1,
+  "confirmed_exit_contracts": 0,
+  "cost_model": {
+    "bids": [],
+    "book_age_seconds": 1,
+    "competing_ask_units": 200,
+    "own_quote_units": null,
+    "packet_cost_units": 100,
+    "packet_entry_fee_units": 100,
+    "passive_allowed": true,
+    "proof_complete": true,
+    "seconds_to_close": 300,
+    "ticks": [
+      {
+        "maker_fee_units": 100,
+        "price_units": 50,
+        "taker_fee_units": 100
+      },
+      {
+        "maker_fee_units": 100,
+        "price_units": 100,
+        "taker_fee_units": 100
+      },
+      {
+        "maker_fee_units": 100,
+        "price_units": 150,
+        "taker_fee_units": 100
+      },
+      {
+        "maker_fee_units": 100,
+        "price_units": 200,
+        "taker_fee_units": 100
+      }
+    ]
+  },
+  "evidence_complete": true,
+  "exchange_ready": true,
+  "fee_age_seconds": 1,
+  "fees_complete": true,
+  "market": "SYNTHETIC-MARKET-A",
+  "market_open": true,
+  "observed_route": "SYNTHETIC-ROUTE-A",
+  "observed_scope": "SYNTHETIC-SCOPE-A",
+  "position_contracts": 10,
+  "prior_intent_ambiguous": false,
+  "reserved_exit_contracts": 0,
+  "round": "SYNTHETIC-ROUND-A",
+  "route": "SYNTHETIC-ROUTE-A",
+  "schema": "kalshi-public-snapshot-v2",
+  "scope": "SYNTHETIC-SCOPE-A",
+  "seen_intent_ids": [],
+  "side": "yes",
+  "status_age_seconds": 1,
+  "status_build": "KALSELL-PUBLIC-41.90.1-COST-REVIEW",
+  "synthetic": true,
+  "verified_acquired_contracts": 10
+}
