@@ -19,7 +19,7 @@ Windows: `Kalshi15mSellPreview.bat` runs the demo; add `--menu` for grouped Expl
 
 ## What it demonstrates
 
-The public model calculates a **60% whole-contract target** from cumulative supplied acquisitions, then subtracts confirmed exits and reserved exits. It never increases the target because an exit filled. This is stateless teaching arithmetic, not the private engine's durable acquisition-tranche ledger.
+The public model calculates a **60% whole-contract target** from cumulative supplied acquisitions, then subtracts confirmed exits and reserved exits. It never increases the target because an exit filled. The calculation uses only the supplied synthetic snapshot; it does not maintain trading state between runs.
 
 The default demo reviews cost-backed LIMIT prices no higher than 2¢. Every candidate tick must independently cover the full supplied acquisition-packet cost, its entry fees, and the worse of that tick's supplied maker/taker fee estimates. The unsold remainder is valued at zero. Required modeled net remains at least 1¢ total, 0.10¢ per proposed contract, and twice total modeled entry/exit fees.
 
@@ -27,7 +27,7 @@ When fresh supplied bid depth covers the candidate, the highest qualifying reach
 
 The fixture produces six proposed contracts at 1.50¢, with **$0.06 modeled packet net**, using entirely invented costs and fees. No fill is expected or claimed. The original fixed-2¢ teaching example remains available as `examples/eligible_exit_snapshot.json`.
 
-**Public-model distinction:** selected cost-backed planning ideas are reimplemented from v41.90.0. Private credential handling, live clients, cost-proof recovery, automatic amendments, acquisition ledgers and trading authority are absent. The preview is not a feature-equivalent copy of that engine.
+**Public-model distinction:** this is an independent educational implementation using synthetic inputs. It has no account access or live trading authority. Its scope is limited to the behavior documented here.
 
 ## Inputs and results
 
